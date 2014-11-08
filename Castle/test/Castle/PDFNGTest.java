@@ -11,9 +11,9 @@ import org.testng.annotations.Test;
  *
  * @author Xandron
  */
-public class QuestionPrompterNGTest {
+public class PDFNGTest {
     
-    public QuestionPrompterNGTest() {
+    public PDFNGTest() {
     }
 
     @BeforeClass
