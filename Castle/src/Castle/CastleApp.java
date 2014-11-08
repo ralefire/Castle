@@ -14,6 +14,7 @@ import javafx.stage.Stage;
  */
 public class CastleApp extends Application {   
     QuestionBuilder questionBuilder;
+    QuestionPrompter questionPrompter;
     @Override
     public void start(Stage primaryStage) {
         Button btn = new Button();
