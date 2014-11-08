@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Castle;
 
 import javafx.application.Application;
@@ -14,10 +9,11 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 /**
- *
+ * This is the main class for the application.
  * @author Xandron
  */
-public class CastleApp extends Application {    
+public class CastleApp extends Application {   
+    QuestionBuilder questionBuilder;
     @Override
     public void start(Stage primaryStage) {
         Button btn = new Button();
