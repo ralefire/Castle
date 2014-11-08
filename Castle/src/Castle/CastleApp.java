@@ -16,6 +16,7 @@ public class CastleApp extends Application {
     QuestionBuilder questionBuilder;
     QuestionPrompter questionPrompter;
     PDF pdf;
+    XMLBuilder xmlBuilder;
     
     @Override
     public void start(Stage primaryStage) {
