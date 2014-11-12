@@ -27,6 +27,7 @@ public class CastleApp extends Application {
             @Override
             public void handle(ActionEvent event) {
                 System.out.println("Hello World!");
+                // TODO Write some good code here.
             }
         });
         
