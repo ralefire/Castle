@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The QuestionPrompter is a gui to ask the user questions and store the answers.
+ * The QuestionPrompter is a GUI to ask the user questions and store the answers.
  * @author Xandron
  */
 class QuestionPrompter implements Runnable{
