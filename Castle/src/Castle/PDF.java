@@ -48,7 +48,7 @@ class PDF {
     public void load(String filePath) throws IOException {
         if (filePath == null || filePath.equals(""))
             filePath = "C:/Users/Admin/Documents/NetBeansProjects/TestPDFAction/src/resources/6dot1.pdf";
-    
+
         File file = new File(filePath);
         document = PDDocument.load(file); //This will load a document from a file into PDDocument.
 

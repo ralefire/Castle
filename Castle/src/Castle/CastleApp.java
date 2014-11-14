@@ -28,7 +28,7 @@ public class CastleApp extends Application {
             public void handle(ActionEvent event) {
                 System.out.println("Hello World!");
                 //The cake is a lie
-            }
+                }
         });
         
         StackPane root = new StackPane();
