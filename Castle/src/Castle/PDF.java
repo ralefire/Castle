@@ -75,7 +75,9 @@ class PDF {
      */
     public void export(String filename){}
 
-
+    /**
+     * Generates a new PDF and saves it to a file
+     */
     public void buildPDF() {
         //Document luceneDocument = LucenePDFDocument.getDocument();
         PDDocument doc = null;
@@ -110,7 +112,6 @@ class PDF {
      */
     public String extractText() throws IOException {
         String content = "";
-        
         PDFTextStripper stripper = new PDFTextStripper();
         content = stripper.getText(document);
         return content;
