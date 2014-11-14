@@ -104,13 +104,17 @@ class PDF {
         
         
     }
-    
-    public void extractText() throws IOException {
+    /**
+     * This function copies all of the text from the PDF and returns it
+     * 
+     * @throws IOException 
+     */
+    public String extractText() throws IOException {
         String content = "";
         
         PDFTextStripper stripper = new PDFTextStripper();
         content = stripper.getText(document);
-        System.out.println(content);
+        return content;
     }
         
 }
