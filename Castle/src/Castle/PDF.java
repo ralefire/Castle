@@ -45,7 +45,23 @@ class PDF {
      * This loads the filename into the PDF.
      * @param filename 
      */
-    public void load(String filename){}
+    public void load(String filePath) throws IOException {
+        if (filePath == null || filePath.equals(""))
+            filePath = "C:/Users/Admin/Documents/NetBeansProjects/TestPDFAction/src/resources/6dot1.pdf";
+    
+        File file = new File(filePath);
+        document = PDDocument.load(file); //This will load a document from a file into PDDocument.
+
+//        document.getNumberOfPages(); //Returns the number of pages in the PDF file.
+//        document.isEncrypted(); //Lets you know if the PDF file is encrypted or not.
+//        document.void print(); //Sends the PDF document to a printer.
+//        document.removePage(int pageNumber); //Removes the page referred to by the page number.
+//        document.save(String fileName); //Saves the PDF file under the file name.
+//        document.silentPrint(); //This will send the PDF to the default printer without prompting the user for any printer settings.
+//        document.close(); //This will close the file.
+        
+        
+    }
     
     /**
      * This saves the PDF to the filename specified.
@@ -86,24 +102,7 @@ class PDF {
             System.out.println(io);
         }
     }
-    
-  public void loadPDFFromFile(String filePath) throws IOException {
-        if (filePath == null || filePath.equals(""))
-            filePath = "C:/Users/Admin/Documents/NetBeansProjects/TestPDFAction/src/resources/6dot1.pdf";
-    
-        File file = new File(filePath);
-        document = PDDocument.load(file); //This will load a document from a file into PDDocument.
-
-//        document.getNumberOfPages(); //Returns the number of pages in the PDF file.
-//        document.isEncrypted(); //Lets you know if the PDF file is encrypted or not.
-//        document.void print(); //Sends the PDF document to a printer.
-//        document.removePage(int pageNumber); //Removes the page referred to by the page number.
-//        document.save(String fileName); //Saves the PDF file under the file name.
-//        document.silentPrint(); //This will send the PDF to the default printer without prompting the user for any printer settings.
-//        document.close(); //This will close the file.
-        
-        
-    }
+  
     /**
      * This function copies all of the text from the PDF and returns it
      * 
