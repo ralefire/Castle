@@ -27,7 +27,7 @@ class PDF {
     /**
      * This is a map of the hashes to the questions.
      */
-    Map<String, String> questions;
+    Map<String, Question> questions;
     /**
      * This is a map of the hashes to the answers.
      */

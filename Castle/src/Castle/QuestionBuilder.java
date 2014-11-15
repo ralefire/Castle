@@ -11,7 +11,7 @@ class QuestionBuilder implements Runnable{
     /**
      * This is the map of hashes to questions that will be asked.
      */
-    Map<String, String> questions;
+    Map<String, Question> questions;
 
     /**
      * The Constructor of QuestionBuilder.

@@ -8,8 +8,8 @@ import java.util.Map;
  * @author Xandron
  */
 class QuestionPrompter implements Runnable{
-    Map<String, String> questions;
-    Map<String, String> answers;
+    Map<String, Question> questions;
+    Map<String, Question> answers;
 
     QuestionPrompter() {
         this.answers = new HashMap<>();
@@ -18,7 +18,19 @@ class QuestionPrompter implements Runnable{
 
     @Override
     public void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // Build the scene for the questions
+        // Check if something was clicked.
+            // If a browse button was hit, commit the answer and switch to that scene
+            // If the done button was pressed, check if unanswered questions
+                // If there are unanswered questions prompt if they really want to leave them blank.
+                    // If no, continue, else return to CastleApp.
+        
+        // Unknowns:
+            // Done button? (This may be the back button as well)
+                // How do we want to deal with half-answered pdfs?
+                    // Context: Currently we do not know if an answer has been left blank intentionally or not.
+            // Scene is dynamic to question?
+                // Do we have a radio scene and a text scene and a dropdown scene?
     }
     
     /**
