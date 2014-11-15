@@ -28,12 +28,13 @@ public class CastleApp extends Application {
         mainGrid.setVgap(10);
         mainGrid.setPadding(new Insets(25, 25, 25, 25));
         
-        addButton(mainGrid, "Load Template", 0, 0);
-        addButton(mainGrid, "Start", 0, 1);
-        addButton(mainGrid, "Save", 0, 2);
-        addButton(mainGrid, "Save As", 0, 3);
-        addButton(mainGrid, "Edit", 0, 4);
-        addButton(mainGrid, "Quit", 0, 5);
+        // Will probably have to rewrite these to make them call the handler correctly.
+        mainGrid.add(createCenteredButton(mainGrid, "Load Template"), 0, 0);
+        mainGrid.add(createCenteredButton(mainGrid, "Start"), 0, 1);
+        mainGrid.add(createCenteredButton(mainGrid, "Save"), 0, 2);
+        mainGrid.add(createCenteredButton(mainGrid, "Save As"), 0, 3);
+        mainGrid.add(createCenteredButton(mainGrid, "Edit"), 0, 4);
+        mainGrid.add(createCenteredButton(mainGrid, "Quit"), 0, 5);
         
         Scene mainScene = new Scene(mainGrid, 300, 250);
         
@@ -42,7 +43,7 @@ public class CastleApp extends Application {
         primaryStage.show();
     }
 
-    private void addButton(GridPane mainGrid, String buttonText, int col, int row) {
+    private HBox createCenteredButton(GridPane mainGrid, String buttonText) {
         // The Load Button
         Button btn;
         btn = new Button();
@@ -50,7 +51,7 @@ public class CastleApp extends Application {
         HBox hb = new HBox(10);
         hb.setAlignment(Pos.CENTER);
         hb.getChildren().add(btn);
-        mainGrid.add(hb, col, row);
+        return hb;
     }
     /**
      * @param args the command line arguments
