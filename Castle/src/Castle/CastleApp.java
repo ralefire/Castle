@@ -1,11 +1,12 @@
 package Castle;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 /**
@@ -20,25 +21,36 @@ public class CastleApp extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
-                //The cake is a lie
-                }
-        });
         
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
+        GridPane mainGrid = new GridPane();
+        mainGrid.setAlignment(Pos.CENTER);
+        mainGrid.setHgap(10);
+        mainGrid.setVgap(10);
+        mainGrid.setPadding(new Insets(25, 25, 25, 25));
         
-        Scene scene = new Scene(root, 300, 250);
+        addButton(mainGrid, "Load Template", 0, 0);
+        addButton(mainGrid, "Start", 0, 1);
+        addButton(mainGrid, "Save", 0, 2);
+        addButton(mainGrid, "Save As", 0, 3);
+        addButton(mainGrid, "Edit", 0, 4);
+        addButton(mainGrid, "Quit", 0, 5);
         
-        primaryStage.setTitle("Hello World!");
-        primaryStage.setScene(scene);
+        Scene mainScene = new Scene(mainGrid, 300, 250);
+        
+        primaryStage.setTitle("Castle");
+        primaryStage.setScene(mainScene);
         primaryStage.show();
+    }
+
+    private void addButton(GridPane mainGrid, String buttonText, int col, int row) {
+        // The Load Button
+        Button btn;
+        btn = new Button();
+        btn.setText(buttonText);
+        HBox hb = new HBox(10);
+        hb.setAlignment(Pos.CENTER);
+        hb.getChildren().add(btn);
+        mainGrid.add(hb, col, row);
     }
     /**
      * @param args the command line arguments
