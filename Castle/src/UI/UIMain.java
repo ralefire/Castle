@@ -5,6 +5,8 @@
  */
 package UI;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -16,6 +18,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  *
@@ -34,6 +37,8 @@ public class UIMain extends Stage {
     BorderPane border = new BorderPane();
     VBox centerVbox = new VBox();
     
+    Boolean templateLoaded = false;
+    
     public UIMain() {
         formatButton(loadButton);
         formatButton(startButton);
@@ -41,15 +46,39 @@ public class UIMain extends Stage {
         formatButton(saveButton);
         formatButton(editButton);
         formatButton(quitButton);
+        loadedCheck();
         formatVbox();
         formatBorder();
         formatTitle();
+        
+        loadButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                templateLoaded = true;
+                loadedCheck();
+            }
+        });
         
         this.setScene(new Scene(border, 350, 400));
         this.show();
         
     }
     
+    public void loadedCheck() {
+        if (!templateLoaded) {
+            startButton.setDisable(true);
+            saveAsButton.setDisable(true);
+            saveButton.setDisable(true);
+            editButton.setDisable(true);
+        }
+        else {
+            startButton.setDisable(false);
+            saveAsButton.setDisable(false);
+            saveButton.setDisable(false);
+            editButton.setDisable(false);
+        }
+    }
+
     public void formatBorder() {
         border.setCenter(centerVbox);
         border.setStyle("-fx-background-color: #9bdaef");
