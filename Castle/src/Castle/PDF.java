@@ -20,7 +20,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
  * This is a representation of our PDF.
  * @author Winners
  */
-class PDF {
+public class PDF {
     
     PDDocument document;
     

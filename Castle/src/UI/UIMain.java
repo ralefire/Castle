@@ -5,6 +5,7 @@
  */
 package UI;
 
+import Castle.PDF;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -18,7 +19,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  *
@@ -36,10 +36,12 @@ public class UIMain extends Stage {
     HBox titleBox = new HBox();
     BorderPane border = new BorderPane();
     VBox centerVbox = new VBox();
-
+    PDF pdf;
+    
     Boolean templateLoaded = false;
     
-    public UIMain() {
+    public UIMain(PDF pdf) {
+        this.pdf = pdf;
         formatButton(loadButton);
         formatButton(startButton);
         formatButton(saveAsButton);
