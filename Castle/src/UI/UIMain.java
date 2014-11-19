@@ -36,7 +36,7 @@ public class UIMain extends Stage {
     HBox titleBox = new HBox();
     BorderPane border = new BorderPane();
     VBox centerVbox = new VBox();
-    
+
     Boolean templateLoaded = false;
     
     public UIMain() {
