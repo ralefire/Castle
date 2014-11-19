@@ -2,13 +2,7 @@ package Castle;
 
 import UI.UIMain;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * This is the main class for the application.
