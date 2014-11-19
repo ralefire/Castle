@@ -38,8 +38,6 @@ public class UIMain extends Stage {
     VBox centerVbox = new VBox();
     PDF pdf;
     
-    Boolean templateLoaded = false;
-    
     public UIMain(PDF pdf) {
         this.pdf = pdf;
         formatButton(loadButton);
@@ -56,10 +54,45 @@ public class UIMain extends Stage {
         loadButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
-                templateLoaded = true;
                 loadedCheck();
             }
         });
+        
+        startButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                
+            }
+        });
+        
+        saveAsButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                
+            }
+        });
+        
+        saveButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                
+            }
+        });
+        
+        editButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                
+            }
+        });
+        
+        quitButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                System.exit(0);
+            }
+        });
+        
         
         this.setScene(new Scene(border, 350, 400));
         this.show();
@@ -67,7 +100,7 @@ public class UIMain extends Stage {
     }
     
     public void loadedCheck() {
-        if (!templateLoaded) {
+        if (pdf == null) {
             startButton.setDisable(true);
             saveAsButton.setDisable(true);
             saveButton.setDisable(true);
