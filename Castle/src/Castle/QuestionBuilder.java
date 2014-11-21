@@ -7,7 +7,7 @@ import java.util.Map;
  * This class is created to create the questions for the given hashes in the PDF.
  * @author Xandron
  */
-class QuestionBuilder implements Runnable{
+public class QuestionBuilder implements Runnable{
     /**
      * This is the map of hashes to questions that will be asked.
      */

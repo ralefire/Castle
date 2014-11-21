@@ -24,6 +24,9 @@ import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 
 /**
@@ -91,7 +94,7 @@ public class PDF {
     /**
      * Generates a new PDF and saves it to a file
      */
-    public void buildPDF() {
+    public void buildPDF() throws IOException {
         //Document luceneDocument = LucenePDFDocument.getDocument();
         PDDocument doc = null;
         PDPage page = null;
@@ -112,9 +115,12 @@ public class PDF {
            content.endText(); 
            content.close();
            doc.save("test.pdf"); // save
-           doc.close(); // close
+           
         } catch (IOException | COSVisitorException io){
             System.out.println(io);
+        } finally {
+            if (doc != null)
+                doc.close(); // close
         }
     }
   
@@ -130,18 +136,32 @@ public class PDF {
         return content;
     }
     
+    /**
+     * Sets the keywords value of meta-data to the input string
+     * @param data 
+     */
     public void setKeywords(String data) {
         PDDocumentInformation info = document.getDocumentInformation();
         info.setKeywords(data);
     }
     
+    /**
+     * gets the PDF keywords meta-data
+     * @return 
+     */
     public String getKeywords() {
         return document.getDocumentInformation().getKeywords();
     }
     
-   // public void setKeywords( data) {
-        
-  //  }
+    public void setKeywords(JSONObject data) {
+        PDDocumentInformation info = document.getDocumentInformation();
+        info.setKeywords(data.toJSONString());
+    }
+    
+    public JSONObject getKeywordsAsJSON() throws ParseException {
+        String info = document.getDocumentInformation().getKeywords();     
+        return (JSONObject)new JSONParser().parse(info);
+    }
     
     public void attachFile() throws IOException {
         PDEmbeddedFilesNameTreeNode efTree = new PDEmbeddedFilesNameTreeNode();
