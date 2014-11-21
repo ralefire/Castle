@@ -33,10 +33,10 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 public class PDF {
     
     PDDocument document;
-    //List<Question> questions;
+    List<Question> questions;
     private Boolean isLoaded;
     
-    //Map<Question, String> answers;
+    Map<Question, String> answers;
     /**
      * This is simply the content of the PDF.
      */

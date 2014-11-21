@@ -7,7 +7,7 @@ import java.util.Map;
  * The QuestionPrompter is a GUI to ask the user questions and store the answers.
  * @author Xandron
  */
-class QuestionPrompter implements Runnable{
+public class QuestionPrompter implements Runnable{
     Map<String, String> questions;
     Map<String, String> answers;
 
