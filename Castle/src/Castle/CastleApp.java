@@ -16,7 +16,7 @@ public class CastleApp extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-        new UIMain();
+        new UIMain(pdf);
     }
     /**
      * @param args the command line arguments
