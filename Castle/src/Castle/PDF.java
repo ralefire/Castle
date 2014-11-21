@@ -6,6 +6,9 @@ package Castle;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -15,32 +18,51 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.util.PDFTextStripper;
+import java.util.List;
+import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
+import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
+import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
+import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
+
 
 /**
  * This is a representation of our PDF.
  * @author Winners
  */
-class PDF {
+public class PDF {
     
     PDDocument document;
+    List<Question> questions;
+    private Boolean isLoaded;
     
-    /**
-     * This is a map of the hashes to the questions.
-     */
-    Map<String, String> questions;
-    /**
-     * This is a map of the hashes to the answers.
-     */
-    Map<String, String> answers;
+    Map<Question, String> answers;
     /**
      * This is simply the content of the PDF.
      */
     String content;
 
+    /**
+     * default constructor
+     */
     PDF() {
         this.answers = new HashMap<>();
-        this.questions = new HashMap<>();
+        this.questions = new ArrayList();
+        this.isLoaded = false;
     }
+    
+    public Boolean isLoaded() {
+        return isLoaded;
+    }
+    
+    
+    //        document.getNumberOfPages(); //Returns the number of pages in the PDF file.
+    //        document.isEncrypted(); //Lets you know if the PDF file is encrypted or not.
+    //        document.void print(); //Sends the PDF document to a printer.
+    //        document.removePage(int pageNumber); //Removes the page referred to by the page number.
+    //        document.save(String fileName); //Saves the PDF file under the file name.
+    //        document.silentPrint(); //This will send the PDF to the default printer without prompting the user for any printer settings.
+    //        document.close(); //This will close the file.
     /**
      * This loads the filename into the PDF.
      * @param filename 
@@ -51,16 +73,7 @@ class PDF {
 
         File file = new File(filePath);
         document = PDDocument.load(file); //This will load a document from a file into PDDocument.
-
-//        document.getNumberOfPages(); //Returns the number of pages in the PDF file.
-//        document.isEncrypted(); //Lets you know if the PDF file is encrypted or not.
-//        document.void print(); //Sends the PDF document to a printer.
-//        document.removePage(int pageNumber); //Removes the page referred to by the page number.
-//        document.save(String fileName); //Saves the PDF file under the file name.
-//        document.silentPrint(); //This will send the PDF to the default printer without prompting the user for any printer settings.
-//        document.close(); //This will close the file.
-        
-        
+        isLoaded = true;         
     }
     
     /**
@@ -94,7 +107,7 @@ class PDF {
            PDPageContentStream content = new PDPageContentStream(doc, page);
            content.beginText();
            content.setFont( font, 12 ); // set font (mandatory)
-           content.moveTextPositionByAmount( 100, 700 ); // set text position (mandatory)
+           content.moveTextPositionByAmount( 100, 100 ); // set text position (mandatory)
            content.drawString("This is an awesome PDF"); // enter text
            content.endText(); 
            content.close();
@@ -116,5 +129,46 @@ class PDF {
         content = stripper.getText(document);
         return content;
     }
+    
+    public void setKeywords(String data) {
+        PDDocumentInformation info = document.getDocumentInformation();
+        info.setKeywords(data);
+    }
+    
+    public String getKeywords() {
+        return document.getDocumentInformation().getKeywords();
+    }
+    
+   // public void setKeywords( data) {
+        
+  //  }
+    
+    public void attachFile() throws IOException {
+        PDEmbeddedFilesNameTreeNode efTree = new PDEmbeddedFilesNameTreeNode();
+
+        //first create the file specification, which holds the embedded file
+        PDComplexFileSpecification fileSpec = new PDComplexFileSpecification();
+        fileSpec.setFile( "Keys.txt" );
+        InputStream is = getClass().getResourceAsStream("/resources/" + "Keys.txt");
+        PDEmbeddedFile pdEmbedFile = new PDEmbeddedFile(document, is );
+        
+        
+        //set some of the attributes of the embedded file
+        pdEmbedFile.setSubtype( "test/plain" );
+        //pdEmbedFile.setSize( data.length );
+        pdEmbedFile.setCreationDate( new GregorianCalendar() );
+        fileSpec.setEmbeddedFile(pdEmbedFile );
+
+        //add the entry to the embedded file tree and set in the document.
+        Map efMap = new HashMap();
+        efMap.put("My first attachment", fileSpec );
+        efTree.setNames( efMap );
+        
+        //attachments are stored as part of the "names" dictionary in the document catalog
+        PDDocumentNameDictionary names = new PDDocumentNameDictionary( document.getDocumentCatalog() );
+        names.setEmbeddedFiles( efTree );
+        document.getDocumentCatalog().setNames( names );
+    }
+    
         
 }
