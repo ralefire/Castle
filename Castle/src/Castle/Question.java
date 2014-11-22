@@ -10,5 +10,32 @@ package Castle;
  * @author Admin
  */
 public class Question {
+    String prompt;
+    String hash;
+    String type;
+
+    public String getPrompt() {
+        return prompt;
+    }
+
+    public void setPrompt(String prompt) {
+        this.prompt = prompt;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
     
 }
