@@ -135,35 +135,31 @@ public class PDF {
         content = stripper.getText(document);
         return content;
     }
-    
+       
     /**
-     * Sets the keywords value of meta-data to the input string
+     * set keywords meta-data from JSON object
      * @param data 
      */
-    public void setKeywords(String data) {
+    public void setKeywords(JSONObject data) {
         PDDocumentInformation info = document.getDocumentInformation();
-        info.setKeywords(data);
+        info.setCustomMetadataValue("HashKeys", data.toJSONString());
     }
     
     /**
-     * gets the PDF keywords meta-data
-     * @return 
+     * get keywords meta-data as a JSON object
+     * @return
+     * @throws ParseException 
      */
-    public String getKeywords() {
-        return document.getDocumentInformation().getKeywords();
-    }
-    
-    public void setKeywords(JSONObject data) {
-        PDDocumentInformation info = document.getDocumentInformation();
-        info.setKeywords(data.toJSONString());
-    }
-    
     public JSONObject getKeywordsAsJSON() throws ParseException {
-        String info = document.getDocumentInformation().getKeywords();     
+        String info = document.getDocumentInformation().getCustomMetadataValue("HashKeys");     
         return (JSONObject)new JSONParser().parse(info);
     }
     
-    public void attachFile() throws IOException {
+    /**
+     * Attach the keys file to the PDF
+     * @throws IOException 
+     */
+    public void attachKeysFile() throws IOException {
         PDEmbeddedFilesNameTreeNode efTree = new PDEmbeddedFilesNameTreeNode();
 
         //first create the file specification, which holds the embedded file
@@ -189,4 +185,6 @@ public class PDF {
         names.setEmbeddedFiles( efTree );
         document.getDocumentCatalog().setNames( names );
     }
+    
+    
 }
