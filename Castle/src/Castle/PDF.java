@@ -5,6 +5,8 @@
 package Castle;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ import java.util.List;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.json.simple.JSONObject;
@@ -184,6 +188,78 @@ public class PDF {
         PDDocumentNameDictionary names = new PDDocumentNameDictionary( document.getDocumentCatalog() );
         names.setEmbeddedFiles( efTree );
         document.getDocumentCatalog().setNames( names );
+    }
+    
+    public void loadPDFAttachment(String filePath) throws IOException {
+        PDDocumentNameDictionary namesDictionary = new PDDocumentNameDictionary(document.getDocumentCatalog());
+        PDEmbeddedFilesNameTreeNode efTree = namesDictionary.getEmbeddedFiles();
+        if (efTree != null)
+        {
+            Map<String,COSObjectable> names = efTree.getNames();
+            if (names != null)
+            {
+                extractFiles(names, filePath);
+            }
+            else
+            {
+                List<PDNameTreeNode> kids = efTree.getKids();
+                for (PDNameTreeNode node : kids)
+                {
+                    names = node.getNames();
+                    extractFiles(names, filePath);
+                }
+            }
+        }
+    }
+    
+    
+    private static void extractFiles(Map<String,COSObjectable> names, String filePath) 
+            throws IOException
+    {
+        for (String filename : names.keySet())
+        {
+            PDComplexFileSpecification fileSpec = (PDComplexFileSpecification)names.get(filename);
+            PDEmbeddedFile embeddedFile = getEmbeddedFile(fileSpec);
+            extractFile(filePath, filename, embeddedFile);
+        }
+    }
+
+    private static void extractFile(String filePath, String filename, PDEmbeddedFile embeddedFile)
+            throws IOException, FileNotFoundException
+    {
+        String embeddedFilename = filePath + filename;
+        File file = new File(filePath + filename);
+        System.out.println("Writing " + embeddedFilename);
+        FileOutputStream fos = new FileOutputStream(file);
+        fos.write(embeddedFile.getByteArray());
+        fos.close();
+    }
+    
+    public static PDEmbeddedFile getEmbeddedFile(PDComplexFileSpecification fileSpec )
+    {
+        // search for the first available alternative of the embedded file
+        PDEmbeddedFile embeddedFile = null;
+        if (fileSpec != null)
+        {
+            embeddedFile = fileSpec.getEmbeddedFileUnicode(); 
+            if (embeddedFile == null)
+            {
+                embeddedFile = fileSpec.getEmbeddedFileDos();
+            }
+            if (embeddedFile == null)
+            {
+                embeddedFile = fileSpec.getEmbeddedFileMac();
+            }
+            if (embeddedFile == null)
+            {
+                embeddedFile = fileSpec.getEmbeddedFileUnix();
+            }
+            if (embeddedFile == null)
+            {
+                embeddedFile = fileSpec.getEmbeddedFile();
+            }
+        }
+        return embeddedFile;
     }
     
     
