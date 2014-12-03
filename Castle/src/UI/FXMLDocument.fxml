@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #9bdaef;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UI.FXMLDocumentController">
+   <center>
+      <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="560.0" spacing="15.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+         <children>
+            <HBox prefHeight="70.0" prefWidth="200.0">
+               <children>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Castle PDF Generator" textAlignment="CENTER" wrappingWidth="556.564453125">
+                     <font>
+                        <Font size="48.0" />
+                     </font>
+                  </Text>
+               </children>
+            </HBox>
+            <Button fx:id="loadButton" minWidth="150.0" mnemonicParsing="false" onAction="#loadPress" text="Load" textAlignment="CENTER" />
+            <Button fx:id="startButton" disable="true" minWidth="150.0" mnemonicParsing="false" onAction="#startPress" text="Start" />
+            <Button fx:id="saveButton" disable="true" minWidth="150.0" mnemonicParsing="false" onAction="#savePress" text="Save" />
+            <Button fx:id="saveAsButton" disable="true" minWidth="150.0" mnemonicParsing="false" onAction="#saveAsPress" text="Save As" />
+            <Button fx:id="editButton" disable="true" minWidth="150.0" mnemonicParsing="false" onAction="#editPress" text="Edit" />
+            <Button fx:id="quitButton" minWidth="150.0" mnemonicParsing="false" onAction="#quitPress" text="Quit" />
+         </children>
+         <padding>
+            <Insets bottom="50.0" left="25.0" right="25.0" />
+         </padding>
+      </VBox>
+   </center>
+</BorderPane>
