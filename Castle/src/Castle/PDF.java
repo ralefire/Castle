@@ -39,15 +39,11 @@ import org.json.simple.parser.ParseException;
  */
 public class PDF {
     
-    PDDocument document;
-    List<Question> questions;
-    private Boolean isLoaded;
-    
-    Map<Question, String> answers;
-    /**
-     * This is simply the content of the PDF.
-     */
-    String content;
+    PDDocument document;                // root PDF document object
+    List<Question> questions;           // represents the PDF questions
+    private Boolean isLoaded;           // true if pdf document is loaded, false otherwise
+    Map<Question, String> answersMap;   // maps questions to answers
+    private String textContent;         // represents the full PDF text content
 
     /**
      * default constructor
@@ -58,29 +54,62 @@ public class PDF {
         this.isLoaded = false;
     }
     
+    /**
+     * getter method for questions list
+     * @return questions
+     */
+    public List<Question> getQuestions() {
+        return questions;
+    }
+    
+    
+    
+    
+    /**
+     * setter method for questions list
+     * @param questions 
+     */
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
+    }
+    
+    /**
+     * setter method for answers map
+     * @param answersMap 
+     */
+    public void setAnswers(Map<Question, String> answersMap) {
+        this.answersMap = answersMap;
+    }
+    
+    /**
+     * true if document already loaded, false otherwise
+     * @return 
+     */
     public Boolean isLoaded() {
         return isLoaded;
     }
     
-    
-    //        document.getNumberOfPages(); //Returns the number of pages in the PDF file.
-    //        document.isEncrypted(); //Lets you know if the PDF file is encrypted or not.
-    //        document.void print(); //Sends the PDF document to a printer.
-    //        document.removePage(int pageNumber); //Removes the page referred to by the page number.
-    //        document.save(String fileName); //Saves the PDF file under the file name.
-    //        document.silentPrint(); //This will send the PDF to the default printer without prompting the user for any printer settings.
-    //        document.close(); //This will close the file.
+
     /**
-     * This loads the filename into the PDF.
+     * This loads the filename into the PDF and parses the PDF
      * @param filename 
      */
-    public void load(String filePath) throws IOException {
+    public void load(String filePath) throws IOException, ParseException {
         if (filePath == null || filePath.equals(""))
             filePath = "C:/Users/Admin/Documents/NetBeansProjects/TestPDFAction/src/resources/6dot1.pdf";
 
         File file = new File(filePath);
         document = PDDocument.load(file); //This will load a document from a file into PDDocument.
-        isLoaded = true;         
+        isLoaded = true;
+        
+        JSONObject keysJSON = getKeywordsAsJSON();
+        String keys = "";
+        for(Object key : keysJSON.keySet()) {
+            Object value = keysJSON.get(key);
+            
+        }
+        
+
     }
     
     /**
@@ -96,7 +125,28 @@ public class PDF {
     public void export(String filename){}
 
     /**
+     * Inserts the answer strings into the context text
+     * @throws IOException
+     * @throws ParseException 
+     */
+    public void addAnswersToTextContent() throws IOException, ParseException {
+        textContent = extractText();
+        JSONObject keyWords = getKeywordsAsJSON();
+        
+        
+        String keys = "";
+        for(Object key : keyWords.keySet()) {
+            Object value = keyWords.get(key);
+                  
+        }
+        
+        
+    }
+    
+    
+    /**
      * Generates a new PDF and saves it to a file
+     * @throws java.io.IOException
      */
     public void buildPDF() throws IOException {
         //Document luceneDocument = LucenePDFDocument.getDocument();
@@ -111,13 +161,13 @@ public class PDF {
            doc.addPage(page);
            PDFont font = PDType1Font.HELVETICA_BOLD;
 
-           PDPageContentStream content = new PDPageContentStream(doc, page);
-           content.beginText();
-           content.setFont( font, 12 ); // set font (mandatory)
-           content.moveTextPositionByAmount( 100, 100 ); // set text position (mandatory)
-           content.drawString("This is an awesome PDF"); // enter text
-           content.endText(); 
-           content.close();
+           PDPageContentStream PDPContent = new PDPageContentStream(doc, page);
+           PDPContent.beginText();
+           PDPContent.setFont( font, 12 ); // set font (mandatory)
+           PDPContent.moveTextPositionByAmount( 100, 100 ); // set text position (mandatory)
+           PDPContent.drawString("This is an awesome PDF"); // enter text
+           PDPContent.endText(); 
+           PDPContent.close();
            doc.save("test.pdf"); // save
            
         } catch (IOException | COSVisitorException io){
@@ -160,6 +210,19 @@ public class PDF {
     }
     
     /**
+     * get keywords meta-data as a String object
+     * @return
+     * @throws ParseException 
+     */
+    public String getKeywordsAsString() throws ParseException {
+        String info = document.getDocumentInformation().getCustomMetadataValue("HashKeys");     
+        return info;
+    }
+    
+    
+    
+    
+    /**
      * Attach the keys file to the PDF
      * @throws IOException 
      */
@@ -189,6 +252,7 @@ public class PDF {
         names.setEmbeddedFiles( efTree );
         document.getDocumentCatalog().setNames( names );
     }
+    
     
     public void loadPDFAttachment(String filePath) throws IOException {
         PDDocumentNameDictionary namesDictionary = new PDDocumentNameDictionary(document.getDocumentCatalog());
