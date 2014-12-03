@@ -12,6 +12,7 @@ public class QuestionBuilder implements Runnable{
      * This is the map of hashes to questions that will be asked.
      */
     Map<String, String> questions;
+    boolean isBuilt = false;
 
     /**
      * The Constructor of QuestionBuilder.
@@ -27,4 +28,8 @@ public class QuestionBuilder implements Runnable{
      * Has the user build questions from the hashes. 
      */
     private void buildQuestions(){}
+    
+    public boolean isBuilt() {
+        return isBuilt;
+    }
 }

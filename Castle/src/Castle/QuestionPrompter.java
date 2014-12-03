@@ -11,7 +11,7 @@ public class QuestionPrompter implements Runnable{
     Map<String, String> questions;
     Map<String, String> answers;
 
-    QuestionPrompter() {
+    public QuestionPrompter() {
         this.answers = new HashMap<>();
         this.questions = new HashMap<>();
     }

@@ -52,7 +52,7 @@ public class PDF {
     /**
      * default constructor
      */
-    PDF() {
+    public PDF() {
        // this.answers = new HashMap<>();
        // this.questions = new ArrayList();
         this.isLoaded = false;
