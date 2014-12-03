@@ -1,28 +1,25 @@
 package Castle;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is created to create the questions for the given hashes in the PDF.
  * @author Xandron
  */
 public class QuestionBuilder implements Runnable{
-    /**
-     * This is the map of hashes to questions that will be asked.
-     */
-    Map<String, String> questions;
+
+    List<Question> questions;
     boolean isBuilt = false;
 
     /**
      * The Constructor of QuestionBuilder.
      */
     public QuestionBuilder(){
-        this.questions = new HashMap<>();
+        this.questions = new ArrayList<>();
     }
     @Override
     public void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     /**
      * Has the user build questions from the hashes. 
