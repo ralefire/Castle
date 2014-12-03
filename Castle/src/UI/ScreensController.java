@@ -6,7 +6,6 @@
 package UI;
 
 import Castle.PDF;
-import Castle.QuestionBuilder;
 import Castle.QuestionPrompter;
 import java.util.HashMap;
 import javafx.fxml.FXMLLoader;
@@ -22,7 +21,6 @@ public class ScreensController extends StackPane {
     
     private HashMap<String, Node> screens = new HashMap<>();
     PDF pdf;
-    QuestionBuilder builder;
     QuestionPrompter prompter;
     String filename = "";
     
@@ -79,9 +77,8 @@ public class ScreensController extends StackPane {
         }
     }
     
-    public void setParams(PDF pdf, QuestionBuilder builder, QuestionPrompter prompter) {
+    public void setParams(PDF pdf, QuestionPrompter prompter) {
         this.pdf = pdf;
-        this.builder = builder;
         this.prompter = prompter;
     }
 }

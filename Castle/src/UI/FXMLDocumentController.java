@@ -11,13 +11,11 @@ import Castle.QuestionPrompter;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -31,7 +29,6 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     ScreensController myController;
     
     PDF pdf;
-    QuestionBuilder builder; 
     QuestionPrompter prompter; 
     String filename = "";
 
@@ -61,15 +58,8 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     
     @FXML
     private void startPress(){
-        if (builder.isBuilt()) {
-            prompter.run();
-        }
-        else {
-            showWarning("Please complete question builder first");
-            builder.run();
-            prompter.run();
-            myController.setScreen(MainUI.secondPage);
-        }
+        prompter.run();
+        myController.setScreen(MainUI.secondPage);
     }
     
     @FXML
@@ -110,7 +100,6 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     
     @FXML
     private void editPress(){
-        builder.run();
     }
     
     
@@ -132,7 +121,6 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     public void setScreenParent(ScreensController  screenParent) {
         myController = screenParent;
         this.pdf = myController.pdf;
-        this.builder = myController.builder;
         this.prompter = myController.prompter;
         this.filename = myController.filename;
     }
