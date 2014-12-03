@@ -9,26 +9,43 @@ import Castle.PDF;
 import Castle.QuestionBuilder;
 import Castle.QuestionPrompter;
 import java.io.IOException;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
 /**
  *
  * @author Xandron
  */
-public class ConsoleMain implements Runnable{
+public class ConsoleMain extends Application {
+
     PDF pdf;
     QuestionBuilder qb;
     QuestionPrompter qp;
-    public static void main(String [] args){
-        ConsoleMain cm = new ConsoleMain();
-        cm.run();
+
+    public ConsoleMain() {
+        this.pdf = new PDF();
     }
 
     @Override
-    public void run() {
+    public void start(Stage primaryStage) {
+        Boolean runApp = true;
         try {
-            pdf.load("src\\resources\\6dot1.pdf");
+            while (runApp) {
+                // User Loads the PDF from template (pre-built)
+                pdf.load("");
+
+                // User Starts the questionare
+                qp = new QuestionPrompter(pdf.getQuestions());
+                qp.run();
+                
+                // User Saves PDF
+                pdf.save("");
+                
+                // User Quits
+                System.exit(0);
+            }
+
         } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }

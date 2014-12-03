@@ -39,6 +39,7 @@ import org.json.simple.parser.ParseException;
  */
 public class PDF {
     
+
     PDDocument document;                // root PDF document object
     List<Question> questions;           // represents the PDF questions
     private Boolean isLoaded;           // true if pdf document is loaded, false otherwise
@@ -48,7 +49,7 @@ public class PDF {
     /**
      * default constructor
      */
-    PDF() {
+    public PDF() {
        // this.answers = new HashMap<>();
        // this.questions = new ArrayList();
         this.isLoaded = false;
@@ -61,9 +62,6 @@ public class PDF {
     public List<Question> getQuestions() {
         return questions;
     }
-    
-    
-    
     
     /**
      * setter method for questions list
@@ -89,14 +87,15 @@ public class PDF {
         return isLoaded;
     }
     
-
     /**
      * This loads the filename into the PDF and parses the PDF
-     * @param filename 
+     * @param filePath
+     * @throws java.io.IOException
+     * @throws org.json.simple.parser.ParseException
      */
     public void load(String filePath) throws IOException, ParseException {
         if (filePath == null || filePath.equals(""))
-            filePath = "C:/Users/Admin/Documents/NetBeansProjects/TestPDFAction/src/resources/6dot1.pdf";
+            filePath = "src/resources/6dot1.pdf";
 
         File file = new File(filePath);
         document = PDDocument.load(file); //This will load a document from a file into PDDocument.
