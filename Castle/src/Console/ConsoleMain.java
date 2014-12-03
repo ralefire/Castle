@@ -6,11 +6,13 @@
 package Console;
 
 import Castle.PDF;
-import Castle.QuestionBuilder;
 import Castle.QuestionPrompter;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -19,7 +21,6 @@ import javafx.stage.Stage;
 public class ConsoleMain extends Application {
 
     PDF pdf;
-    QuestionBuilder qb;
     QuestionPrompter qp;
 
     public ConsoleMain() {
@@ -46,6 +47,8 @@ public class ConsoleMain extends Application {
             }
 
         } catch (IOException e) {
+        } catch (ParseException ex) {
+            Logger.getLogger(ConsoleMain.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

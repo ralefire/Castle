@@ -5,6 +5,9 @@
  */
 package Castle;
 
+import UI.MainUI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.stage.Stage;
 import static org.testng.Assert.*;
 import org.testng.annotations.AfterClass;
@@ -45,8 +48,12 @@ public class CastleAppNGTest {
     public void testStart() {
         System.out.println("start");
         Stage primaryStage = null;
-        CastleApp instance = new CastleApp();
-        instance.start(primaryStage);
+        MainUI instance = new MainUI();
+        try {
+            instance.start(primaryStage);
+        } catch (Exception ex) {
+            Logger.getLogger(CastleAppNGTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -58,7 +65,7 @@ public class CastleAppNGTest {
     public void testMain() {
         System.out.println("main");
         String[] args = null;
-        CastleApp.main(args);
+        MainUI.main(args);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -69,8 +76,8 @@ public class CastleAppNGTest {
     @Test
     public void testRun() {
         System.out.println("run");
-        CastleApp instance = new CastleApp();
-        instance.run();
+        MainUI instance = new MainUI();
+        //instance.start();
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
