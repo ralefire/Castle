@@ -6,7 +6,6 @@
 package UI;
 
 import Castle.PDF;
-import Castle.QuestionBuilder;
 import Castle.QuestionPrompter;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -19,7 +18,6 @@ import javafx.stage.Stage;
  */
 public class MainUI extends Application {
     PDF pdf = new PDF();
-    QuestionBuilder builder = new QuestionBuilder();
     QuestionPrompter prompter = new QuestionPrompter();
     
     public static String mainPage = "main";
@@ -31,7 +29,7 @@ public class MainUI extends Application {
     public void start(Stage primaryStage) throws Exception {
         ScreensController mainContainer = new ScreensController();
         
-        mainContainer.setParams(pdf, builder, prompter);
+        mainContainer.setParams(pdf, prompter);
         mainContainer.loadScreen(mainPage, mainFXML);
         mainContainer.loadScreen(secondPage, secondFXML);
         

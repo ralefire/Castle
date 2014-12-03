@@ -6,7 +6,6 @@
 package UI;
 
 import Castle.PDF;
-import Castle.QuestionBuilder;
 import Castle.QuestionPrompter;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -24,7 +23,6 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     ScreensController myController;
     
     PDF pdf;
-    QuestionBuilder builder; 
     QuestionPrompter prompter; 
     String filename = "";
     
@@ -44,7 +42,6 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     public void setScreenParent(ScreensController screenParent) {
         myController = screenParent;
         this.pdf = myController.pdf;
-        this.builder = myController.builder;
         this.prompter = myController.prompter;
         this.filename = myController.filename;
     }
