@@ -1,7 +1,9 @@
 package Castle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class is created to create the questions for the given hashes in the PDF.
@@ -9,14 +11,15 @@ import java.util.List;
  */
 public class QuestionBuilder implements Runnable{
 
-    List<Question> questions;
-    boolean isBuilt = false;
+    private final Map<Question, String> answers;
+    private boolean built = false;
 
     /**
      * The Constructor of QuestionBuilder.
+     * @param questions
      */
-    public QuestionBuilder(){
-        this.questions = new ArrayList<>();
+    public QuestionBuilder(List<Question> questions){
+        this.answers = new HashMap<>();
     }
     @Override
     public void run() {
@@ -27,6 +30,27 @@ public class QuestionBuilder implements Runnable{
     private void buildQuestions(){}
     
     public boolean isBuilt() {
-        return isBuilt;
+        return built;
+    }
+
+    /**
+     * @return the questions
+     */
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    /**
+     * @param questions the questions to set
+     */
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
+    }
+
+    /**
+     * @param built the built to set
+     */
+    public void setBuilt(boolean built) {
+        this.built = built;
     }
 }

@@ -10,9 +10,9 @@ package Castle;
  * @author Admin
  */
 public class Question {
-    String prompt;
-    String hash;
-    String type;
+    private String prompt;
+    private String hash;
+    private String type;
 
     public String getPrompt() {
         return prompt;
