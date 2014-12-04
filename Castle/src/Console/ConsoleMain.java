@@ -17,8 +17,7 @@ import org.json.simple.parser.ParseException;
 /**
  *
  * @author Xandron
- */
-public class ConsoleMain extends Application {
+ public class ConsoleMain extends Application {
 
     PDF pdf;
     QuestionPrompter qp;
@@ -52,3 +51,4 @@ public class ConsoleMain extends Application {
         }
     }
 }
+*/

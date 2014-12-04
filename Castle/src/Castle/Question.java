@@ -44,4 +44,8 @@ abstract public class Question {
         this.type = type;
     }
     
+    @Override
+    public String toString() {
+        return hash;
+    }
 }

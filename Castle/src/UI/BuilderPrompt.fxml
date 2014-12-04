@@ -14,7 +14,10 @@
    <center>
       <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <top>
-            <Label text="What is your age?" BorderPane.alignment="CENTER" />
+            <Label fx:id="questionPromptLabel" text="What is your age?" BorderPane.alignment="CENTER">
+               <font>
+                  <Font size="30.0" />
+               </font></Label>
          </top>
          <center>
             <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">

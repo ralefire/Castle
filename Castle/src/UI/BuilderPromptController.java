@@ -17,6 +17,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
 
@@ -33,15 +34,25 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     QuestionPrompter prompter; 
     String filename = "";
     
+    @FXML 
+    Label questionPromptLabel;
+    
     @FXML
-    ListView<String> questionListView;
-    ObservableList<String> questions = FXCollections.observableArrayList();
+    ListView<Question> questionListView;
+    ObservableList<Question> questions = FXCollections.observableArrayList();
     
     /**
      * Initializes the controller class. 
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Handle ListView selection changes.
+        questionListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newQuestion) -> {
+           questionPromptLabel.setText(newQuestion.getPrompt());
+           if (newQuestion.getType().equals("Radio")) {
+               ;
+           }
+        });
     }    
     
     /**
@@ -64,11 +75,6 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         setQuestions();
     }
     
-    @FXML
-    public void questionHandle() {
-        
-    }
-    
     /**
      * 
      */
@@ -76,8 +82,9 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         Set<Question> questionSet = prompter.getAnswers().keySet();
         
         for (Question question : questionSet) {
-            String hash = question.getHash();
-            questions.add(hash);
+            questions.add(question);
+            /*String hash = question.getHash();
+            questions.add(hash);*/
         }
         questionListView.setItems(questions);
     }
