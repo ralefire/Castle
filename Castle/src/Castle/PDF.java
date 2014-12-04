@@ -59,7 +59,8 @@ public class PDF {
      * 
      */
     public void loadQuestions() {
-        questions.add(new TextQuestion("What is your age?", "Age", "Text"));
+        questions.add(new TextQuestion("What is your age?", "Age", "TextField"));
+        questions.add(new TextQuestion("Describe the damage", "Damage", "TextArea"));
         questions.add(new RadioQuestion("What is your house size?", "House Size", "Radio"));
     }
     
