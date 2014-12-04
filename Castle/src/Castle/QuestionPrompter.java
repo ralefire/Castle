@@ -25,6 +25,7 @@ public class QuestionPrompter implements Runnable{
 
     @Override
     public void run() {
+        System.out.println("This will run the prompter");
         promptQuestions();
     }
     

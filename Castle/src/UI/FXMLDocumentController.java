@@ -67,7 +67,12 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
         if (filename == "") {
             FileChooser chooser = new FileChooser();
             File file = chooser.showSaveDialog(new Stage());
-           try {
+             if(file == null) {
+                showWarning("No file selected or created");
+                filename = "";
+            } else {
+             
+            try {
                 if (!file.exists()) {
                     file.createNewFile();
                     }
@@ -76,7 +81,8 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
                     ;
                 }
 
-                filename = file.getPath();
+            filename = file.getPath();
+            }
         }
         pdf.save(filename);
     }
@@ -85,16 +91,22 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     private void saveAsPress(){
         FileChooser chooser = new FileChooser();
         File file = chooser.showSaveDialog(new Stage());
-        try {
-            if (!file.exists()) {
-                file.createNewFile();
+        
+        if(file == null) {
+                showWarning("No file selected or created");
+                filename = "";
+        } else {
+            try {
+                if (!file.exists()) {
+                    file.createNewFile();
+                    }
                 }
+            catch (Exception e) {
+                ;
             }
-        catch (Exception e) {
-            ;
+            filename = file.getPath();
+            pdf.save(filename);
         }
-        filename = file.getPath();
-        pdf.save(filename);
     }
     
     @FXML
