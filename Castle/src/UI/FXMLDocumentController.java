@@ -58,7 +58,7 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     @FXML
     private void startPress(){
         prompter.run();
-        myController.setScreen(MainUI.secondPage);
+        myController.setScreen(MainUI.prompterPage);
     }
     
     @FXML

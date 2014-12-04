@@ -22,8 +22,8 @@ public class MainUI extends Application {
     
     public static String mainPage = "main";
     public static String mainFXML = "FXMLDocument.fxml";
-    public static String secondPage = "second";
-    public static String secondFXML = "BuilderPrompt.fxml";
+    public static String prompterPage = "prompter";
+    public static String prompterFXML = "BuilderPrompt.fxml";
     
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -31,7 +31,7 @@ public class MainUI extends Application {
         
         mainContainer.setParams(pdf, prompter);
         mainContainer.loadScreen(mainPage, mainFXML);
-        mainContainer.loadScreen(secondPage, secondFXML);
+        mainContainer.loadScreen(prompterPage, prompterFXML);
         
         mainContainer.setScreen(mainPage);
         

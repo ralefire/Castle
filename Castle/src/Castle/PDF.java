@@ -60,6 +60,9 @@ public class PDF {
      * @return questions
      */
     public List<Question> getQuestions() {
+        questions.add(new TextQuestion("What is your age?", "@@age@@", "Text"));
+        questions.add(new RadioQuestion("What is your house size?", "@@House Size@@", "Radio"));
+        
         return questions;
     }
     

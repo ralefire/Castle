@@ -6,11 +6,18 @@
 package UI;
 
 import Castle.PDF;
+import Castle.Question;
 import Castle.QuestionPrompter;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.ResourceBundle;
+import java.util.Set;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
+import javafx.scene.control.ListView;
 
 
 /**
@@ -25,6 +32,10 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     PDF pdf;
     QuestionPrompter prompter; 
     String filename = "";
+    
+    @FXML
+    ListView<String> questionListView;
+    ObservableList<String> questions = FXCollections.observableArrayList();
     
     
     /**
@@ -44,6 +55,17 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         this.pdf = myController.pdf;
         this.prompter = myController.prompter;
         this.filename = myController.filename;
+        setQuestions();
     }
     
+    private void setQuestions() {
+        System.out.println("ENTERED");
+        Set<Question> questionSet = prompter.getAnswers().keySet();
+        
+        for (Question question : questionSet) {
+            System.out.println("HERE: " + question.getPrompt());
+            questions.add(question.getPrompt());
+        }
+        questionListView.setItems(questions);
+    }
 }
