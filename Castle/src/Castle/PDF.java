@@ -51,8 +51,16 @@ public class PDF {
      */
     public PDF() {
        // this.answers = new HashMap<>();
-       // this.questions = new ArrayList();
+        this.questions = new ArrayList();
         this.isLoaded = false;
+    }
+    
+    /**
+     * 
+     */
+    public void loadQuestions() {
+        questions.add(new TextQuestion("What is your age?", "Age", "Text"));
+        questions.add(new RadioQuestion("What is your house size?", "House Size", "Radio"));
     }
     
     /**
@@ -60,9 +68,6 @@ public class PDF {
      * @return questions
      */
     public List<Question> getQuestions() {
-        questions.add(new TextQuestion("What is your age?", "@@age@@", "Text"));
-        questions.add(new RadioQuestion("What is your house size?", "@@House Size@@", "Radio"));
-        
         return questions;
     }
     

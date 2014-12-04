@@ -31,7 +31,6 @@ public class MainUI extends Application {
         
         mainContainer.setParams(pdf, prompter);
         mainContainer.loadScreen(mainPage, mainFXML);
-        mainContainer.loadScreen(prompterPage, prompterFXML);
         
         mainContainer.setScreen(mainPage);
         

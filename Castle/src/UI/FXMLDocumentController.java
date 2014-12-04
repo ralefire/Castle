@@ -57,7 +57,9 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     
     @FXML
     private void startPress(){
+        prompter.setQuestions(pdf.getQuestions());
         prompter.run();
+        myController.loadScreen(MainUI.prompterPage, MainUI.prompterFXML);
         myController.setScreen(MainUI.prompterPage);
     }
     
@@ -117,16 +119,15 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     @FXML
     private void loadPress() {
         System.out.println("Loading...");
+        pdf.loadQuestions();
         startButton.setDisable(false);
         saveButton.setDisable(false);
         saveAsButton.setDisable(false);
         editButton.setDisable(false);
-        
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        System.out.println("RUN!!");
     }    
     
     public void setScreenParent(ScreensController  screenParent) {

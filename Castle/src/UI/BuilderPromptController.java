@@ -37,19 +37,25 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     ListView<String> questionListView;
     ObservableList<String> questions = FXCollections.observableArrayList();
     
-    
     /**
      * Initializes the controller class. 
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
     }    
     
+    /**
+     * 
+     */
     @FXML
     public void goBack() {
         myController.setScreen(MainUI.mainPage);
     }
+    
+    /**
+     * 
+     * @param screenParent 
+     */
     public void setScreenParent(ScreensController screenParent) {
         myController = screenParent;
         this.pdf = myController.pdf;
@@ -58,13 +64,20 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         setQuestions();
     }
     
+    @FXML
+    public void questionHandle() {
+        
+    }
+    
+    /**
+     * 
+     */
     private void setQuestions() {
-        System.out.println("ENTERED");
         Set<Question> questionSet = prompter.getAnswers().keySet();
         
         for (Question question : questionSet) {
-            System.out.println("HERE: " + question.getPrompt());
-            questions.add(question.getPrompt());
+            String hash = question.getHash();
+            questions.add(hash);
         }
         questionListView.setItems(questions);
     }
