@@ -51,8 +51,17 @@ public class PDF {
      */
     public PDF() {
        // this.answers = new HashMap<>();
-       // this.questions = new ArrayList();
+        this.questions = new ArrayList();
         this.isLoaded = false;
+    }
+    
+    /**
+     * 
+     */
+    public void loadQuestions() {
+        questions.add(new TextQuestion("What is your age?", "Age", "TextField"));
+        questions.add(new TextQuestion("Describe the damage", "Damage", "TextArea"));
+        questions.add(new RadioQuestion("What is your house size?", "House Size", "Radio"));
     }
     
     /**

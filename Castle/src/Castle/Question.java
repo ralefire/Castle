@@ -9,11 +9,17 @@ package Castle;
  *
  * @author Admin
  */
-public class Question {
+abstract public class Question {
     private String prompt;
     private String hash;
     private String type;
 
+    public Question(String prompt, String hash, String type) {
+        this.prompt = prompt;
+        this.hash = hash;
+        this.type = type;
+    }
+    
     public String getPrompt() {
         return prompt;
     }
@@ -38,4 +44,8 @@ public class Question {
         this.type = type;
     }
     
+    @Override
+    public String toString() {
+        return hash;
+    }
 }

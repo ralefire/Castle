@@ -57,8 +57,10 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     
     @FXML
     private void startPress(){
+        prompter.setQuestions(pdf.getQuestions());
         prompter.run();
-        myController.setScreen(MainUI.secondPage);
+        myController.loadScreen(MainUI.prompterPage, MainUI.prompterFXML);
+        myController.setScreen(MainUI.prompterPage);
     }
     
     @FXML
@@ -67,7 +69,12 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
         if (filename == "") {
             FileChooser chooser = new FileChooser();
             File file = chooser.showSaveDialog(new Stage());
-           try {
+             if(file == null) {
+                showWarning("No file selected or created");
+                filename = "";
+            } else {
+             
+            try {
                 if (!file.exists()) {
                     file.createNewFile();
                     }
@@ -76,7 +83,8 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
                     ;
                 }
 
-                filename = file.getPath();
+            filename = file.getPath();
+            }
         }
         pdf.save(filename);
     }
@@ -85,16 +93,22 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     private void saveAsPress(){
         FileChooser chooser = new FileChooser();
         File file = chooser.showSaveDialog(new Stage());
-        try {
-            if (!file.exists()) {
-                file.createNewFile();
+        
+        if(file == null) {
+                showWarning("No file selected or created");
+                filename = "";
+        } else {
+            try {
+                if (!file.exists()) {
+                    file.createNewFile();
+                    }
                 }
+            catch (Exception e) {
+                ;
             }
-        catch (Exception e) {
-            ;
+            filename = file.getPath();
+            pdf.save(filename);
         }
-        filename = file.getPath();
-        pdf.save(filename);
     }
     
     @FXML
@@ -105,16 +119,15 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     @FXML
     private void loadPress() {
         System.out.println("Loading...");
+        pdf.loadQuestions();
         startButton.setDisable(false);
         saveButton.setDisable(false);
         saveAsButton.setDisable(false);
         editButton.setDisable(false);
-        
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        System.out.println("RUN!!");
     }    
     
     public void setScreenParent(ScreensController  screenParent) {

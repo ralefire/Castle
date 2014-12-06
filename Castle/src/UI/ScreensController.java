@@ -56,12 +56,8 @@ public class ScreensController extends StackPane {
         if (screens.get(name) != null) {
             if (!getChildren().isEmpty()) {
                 getChildren().remove(0);
-                getChildren().add(screens.get(name));
             }
-            else {
-                setOpacity(1.0);
-                getChildren().add(screens.get(name));
-            }
+            getChildren().add(screens.get(name));
             return true;
         }
         System.out.println("No Screen Loaded");  

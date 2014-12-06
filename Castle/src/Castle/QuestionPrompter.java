@@ -14,17 +14,43 @@ public class QuestionPrompter implements Runnable{
     List<Question> questions;
     Map<Question, String> answers;
 
-    public QuestionPrompter() {
+    /**
+     * 
+     * @return Map<Question, String> 
+     */
+    public Map<Question, String> getAnswers() {
+        return answers;
+    }
+
+    /**
+     * 
+     * @param answers 
+     */
+    public void setAnswers(Map<Question, String> answers) {
+        this.answers = answers;
+    }
+
+    /**
+     * 
+     */
+    public QuestionPrompter(){
         this.answers = new HashMap<>();
         this.questions = new ArrayList<>();
     }
 
-    public QuestionPrompter(List<Question> questions) {
-        this.questions = questions;
+    /**
+     * 
+     * @param questions 
+     */
+    public void setQuestions(List<Question> questions) {
+        for (Question currentQuestion : questions) {
+            answers.put(currentQuestion, "");
+        }
     }
-
+    
     @Override
     public void run() {
+        System.out.println("This will run the prompter");
         promptQuestions();
     }
     
