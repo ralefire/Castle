@@ -102,11 +102,23 @@ public class PDF {
         isLoaded = true;
         
         JSONObject keysJSON = getKeywordsAsJSON();
-        String keys = "";
-        for(Object key : keysJSON.keySet()) {
-            Object value = keysJSON.get(key);
-            
+        
+        if (keysJSON != null) {
+
+            String keys = "";
+            for(Object key : keysJSON.keySet()) {
+                Object value = keysJSON.get(key);
+                
+
+//                if () {
+//                    Question newQuestion = new TextQuestion();
+//                }
+//                else if () {
+//
+//                }
+            } 
         }
+
         
 
     }
