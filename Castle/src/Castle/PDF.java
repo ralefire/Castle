@@ -9,9 +9,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -28,6 +30,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -106,6 +109,7 @@ public class PDF {
         return isLoaded;
     }
     
+
     /**
      * This loads the filename into the PDF and parses the PDF
      * @param filePath
@@ -120,21 +124,63 @@ public class PDF {
         document = PDDocument.load(file); //This will load a document from a file into PDDocument.
         isLoaded = true;
         
-        JSONObject keysJSON = getKeywordsAsJSON();
-        String keys = "";
-        for(Object key : keysJSON.keySet()) {
-            Object value = keysJSON.get(key);
-            
-        }
+        JSONArray jsonKeysArray = getKeywordsAsJSONArray();
         
+        if (jsonKeysArray != null) {
 
+            String keys = "";
+            Iterator<JSONObject> jsonKeysIterator = jsonKeysArray.iterator();
+            while (jsonKeysIterator.hasNext()) {
+                
+                JSONObject keysJSON = jsonKeysIterator.next();
+                
+                keysJSON.keySet().stream().forEach((key) -> {
+                    Object value = keysJSON.get(key);
+                    String prompt = "";
+                    String hash = "";
+                    String type = "";
+                    
+                   // System.out.println(value);
+
+                    if (key.equals("prompt")) {
+                        prompt = (String)value;
+                    }
+                    else if (key.equals("hash")) {
+                        hash = (String)value;
+                    }
+                    else if (key.equals("type"))
+                    {
+                        type = (String)value;
+                    }                    
+                    Question newQuestion;
+                    if (type.equals("TextField")) {
+                        newQuestion = new TextQuestion(prompt, hash, type); // String prompt, String hash, String type
+                        System.out.println(keysJSON);
+                    } else if (type.equals("RadioQuestion")) {
+                        newQuestion = new RadioQuestion(prompt, hash, type); // String prompt, String hash, String type
+                        System.out.println(keysJSON);
+                    } else if (type.equals("TextArea")) {
+                        newQuestion = new RadioQuestion(prompt, hash, type); // String prompt, String hash, String type
+                        System.out.println(keysJSON);
+                    }
+                    
+                });
+            }
+        }
     }
     
     /**
-     * This saves the PDF to the filename specified.
-     * @param filename 
+     * This saves the PDF to the filename specified. 
+     * @param filePath
+     * @throws java.io.IOException
+     * @throws org.apache.pdfbox.exceptions.COSVisitorException
      */
-    public void save(String filename){}
+    public void save(String filePath) throws IOException, COSVisitorException{
+        File file = new File(filePath);
+        OutputStream out = new FileOutputStream(file);
+        document.save(out);
+        out.close();
+    }
     
     /**
      * This exports the PDF in the final format to the location specified.
@@ -149,16 +195,8 @@ public class PDF {
      */
     public void addAnswersToTextContent() throws IOException, ParseException {
         textContent = extractText();
-        JSONObject keyWords = getKeywordsAsJSON();
         
-        
-        String keys = "";
-        for(Object key : keyWords.keySet()) {
-            Object value = keyWords.get(key);
-                  
-        }
-        
-        
+
     }
     
     
@@ -209,22 +247,22 @@ public class PDF {
     }
        
     /**
-     * set keywords meta-data from JSON object
+     * set keywords meta-data from JSONArray
      * @param data 
      */
-    public void setKeywords(JSONObject data) {
+    public void setKeywords(JSONArray data) {
         PDDocumentInformation info = document.getDocumentInformation();
         info.setCustomMetadataValue("HashKeys", data.toJSONString());
     }
     
     /**
-     * get keywords meta-data as a JSON object
+     * get keywords and return them as a JSONArray
      * @return
      * @throws ParseException 
      */
-    public JSONObject getKeywordsAsJSON() throws ParseException {
+    public JSONArray getKeywordsAsJSONArray() throws ParseException {
         String info = document.getDocumentInformation().getCustomMetadataValue("HashKeys");     
-        return (JSONObject)new JSONParser().parse(info);
+        return (JSONArray)new JSONParser().parse(info);
     }
     
     /**
@@ -236,9 +274,6 @@ public class PDF {
         String info = document.getDocumentInformation().getCustomMetadataValue("HashKeys");     
         return info;
     }
-    
-    
-    
     
     /**
      * Attach the keys file to the PDF
@@ -253,7 +288,7 @@ public class PDF {
         InputStream is = getClass().getResourceAsStream("/resources/" + "Keys.txt");
         PDEmbeddedFile pdEmbedFile = new PDEmbeddedFile(document, is );
         
-        
+
         //set some of the attributes of the embedded file
         pdEmbedFile.setSubtype( "test/plain" );
         //pdEmbedFile.setSize( data.length );
