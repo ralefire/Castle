@@ -48,6 +48,10 @@ public class QuestionPrompter implements Runnable{
         }
     }
     
+    public void addAnswer(Question question, String answer) {
+        answers.put(question, answer);
+    }
+    
     @Override
     public void run() {
         System.out.println("This will run the prompter");

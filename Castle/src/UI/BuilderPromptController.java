@@ -5,10 +5,13 @@
  */
 package UI;
 
+import Castle.CheckBoxQuestion;
 import Castle.PDF;
 import Castle.Question;
 import Castle.QuestionPrompter;
+import Castle.RadioQuestion;
 import Castle.TextQuestion;
+import java.awt.CheckboxGroup;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,6 +24,8 @@ import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
@@ -30,6 +35,9 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 
 /**
@@ -45,14 +53,18 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     QuestionPrompter prompter; 
     String filename = "";
     
+    String selected = "";
+    
     ToggleGroup radioButtons = new ToggleGroup();
     
     TextField textFieldAnswer = new TextField();
 
     TextArea textAreaAnswer = new TextArea();
+    
+    CheckBox[] checkbox = null;
 
  
-    HBox buttonBox = new HBox();
+    VBox buttonBox = new VBox();
     
     @FXML
     Pane answerPane;
@@ -73,15 +85,18 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         questionListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newQuestion) -> {
            questionPromptLabel.setText(newQuestion.getPrompt());
            if (newQuestion.getType().equals("TextField")) {
-               formatTextField();
+               formatTextField(newQuestion);
            }
            
            else if (newQuestion.getType().equals("Radio")) {
-               formatRadioButton();
+               formatRadioButton((RadioQuestion)newQuestion);
            }
            
            else if (newQuestion.getType().equals("TextArea")) {
                formatTextArea(newQuestion);
+           }
+           else if (newQuestion.getType().equals("CheckBox")) {
+               formatCheckBox((CheckBoxQuestion)newQuestion);
            }
         });
     }    
@@ -91,30 +106,32 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
      * @param question 
      */
     public void formatTextArea(Question question) {
-       answerPane.getChildren().clear();
-       textAreaAnswer.setMinSize(300, 200);
-       textAreaAnswer.setLayoutX(13);
-       textAreaAnswer.setLayoutY(38);
-       textAreaAnswer.setMaxSize(374, 218);
-       answerPane.getChildren().add(textAreaAnswer);
+        String answer = prompter.getAnswers().get(question);
+        answerPane.getChildren().clear();
+        textAreaAnswer.setMinSize(300, 200);
+        textAreaAnswer.setLayoutX(13);
+        textAreaAnswer.setLayoutY(38);
+        textAreaAnswer.setMaxSize(374, 218);
+        setTextFieldValue(answer);
+         answerPane.getChildren().add(textAreaAnswer);
     }
     
     /**
      * 
      */
-    public void formatRadioButton() {
-        buttonBox.setLayoutX(116);
-        buttonBox.setLayoutY(116);
+    public void formatRadioButton(RadioQuestion question) {
+        String currentAnswer = prompter.getAnswers().get(question);
+        buttonBox.setLayoutX(150);
+        buttonBox.setLayoutY(66);
         answerPane.getChildren().clear();
         
-        List<String> answers = new ArrayList<>();
-        answers.add("<1000");
-        answers.add("1000-2500");
-        answers.add("2500<");
-               
         buttonBox.getChildren().clear();
-        for (String answer : answers) {
-            RadioButton button = new RadioButton(answer);
+        for (String posAnswer : question.getPosAnswers()) {
+            RadioButton button = new RadioButton(posAnswer);
+            button.setUserData(posAnswer);
+            if (posAnswer.equals(currentAnswer)) {
+                button.setSelected(true);
+            }
             button.setToggleGroup(radioButtons);
             buttonBox.getChildren().add(button);
         }
@@ -125,11 +142,51 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     /**
      * 
      */
-    public void formatTextField() {
+    private void formatCheckBox(CheckBoxQuestion question) {
+        buttonBox.setLayoutX(150);
+        buttonBox.setLayoutY(66);
+        answerPane.getChildren().clear();
+        
+       
+        buttonBox.getChildren().clear();
+        
+        
+        if (checkbox != null) {
+            checkbox = null;
+        }
+        
+        List<String> possibleAnswers = question.getPosAnswers();
+        
+        checkbox = new CheckBox[possibleAnswers.size()];
+        
+        int i = 0;
+        for (String answer : possibleAnswers) {
+            CheckBox current = checkbox[i] = new CheckBox(answer);
+            buttonBox.getChildren().add(current);
+        }
+        
+        answerPane.getChildren().add(buttonBox);
+    }
+    
+    /**
+     * 
+     */
+    public void formatTextField(Question question) {
+        String answer = prompter.getAnswers().get(question);
         textFieldAnswer.setLayoutX(116);
         textFieldAnswer.setLayoutY(116);
         answerPane.getChildren().clear();
-        answerPane.getChildren().add(textFieldAnswer);
+        
+        setTextFieldValue(answer);
+         answerPane.getChildren().add(textFieldAnswer);
+    }
+
+    private void setTextFieldValue(String answer) {
+        if (answer.equals("")) {
+        }
+        else {
+            textAreaAnswer.setText(answer);
+        }
     }
     
     /**
@@ -138,6 +195,58 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     @FXML
     public void goBack() {
         myController.setScreen(MainUI.mainPage);
+    }
+    
+    @FXML
+    public void save() {
+        selected = questionListView.getSelectionModel().getSelectedItem().getType();
+        Question question = questionListView.getSelectionModel().getSelectedItem();
+        if (selected.equals("TextArea")) {
+            getTextAreaAnswer(question);
+        } else if (selected.equals("TextField")) {
+            getTextFieldAnswer(question);
+        } else if (selected.equals("Radio")) {
+            getRadioAnswer(question);
+        } else if (selected.equals("CheckBox")) {
+            getCheckBoxAnswer(question);
+        }
+        
+    }
+    
+    public void getTextAreaAnswer(Question question) {
+        String answer = textAreaAnswer.getText();
+       
+        saveTextAnswer(answer, question);
+    }
+    
+    public void getTextFieldAnswer(Question question) {
+        String answer = textFieldAnswer.getText();
+        
+        saveTextAnswer(answer, question);
+        
+    }
+
+    private void saveTextAnswer(String answer, Question question) {
+        if (answer.equals("")) {
+            showWarning("Please give answer before saving");
+        }
+        else {
+            prompter.addAnswer(question, answer);
+            System.out.println(prompter.getAnswers().get(question));
+        }
+    }
+    
+    public void getRadioAnswer(Question question) {
+        if (radioButtons.getSelectedToggle() != null) {
+            String answer = radioButtons.getSelectedToggle().getUserData().toString();
+            prompter.addAnswer(question, answer);
+        } else {
+            showWarning("No answer selected to save");
+        }
+    }
+    
+    public void getCheckBoxAnswer(Question question) {
+        
     }
     
     /**
@@ -164,5 +273,17 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
             questions.add(hash);*/
         }
         questionListView.setItems(questions);
+    }
+    
+    private void showWarning(String warning) {
+        Stage popup = new Stage();
+        VBox headsUp = new VBox();
+        Text prompt = new Text(warning);
+        prompt.setStyle("-fx-font-size: 11pt;");
+        headsUp.getChildren().add(prompt);
+        headsUp.setAlignment(Pos.CENTER);
+        popup.setScene(new Scene(headsUp, 300, 200));
+        popup.setTitle("Warning");
+        popup.show(); 
     }
 }

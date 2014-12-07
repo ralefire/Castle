@@ -7,8 +7,9 @@ import java.util.List;
 public class RadioQuestion extends Question {
     List<String> posAnswers;
 
-    public RadioQuestion(String prompt, String hash, String type) {
+    public RadioQuestion(String prompt, String hash, String type, List<String> posAnswers) {
         super(prompt, hash, type);
+        this.posAnswers = posAnswers;
     }
 
    

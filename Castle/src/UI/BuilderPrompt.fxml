@@ -20,7 +20,14 @@
             <Pane fx:id="answerPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
          </center>
          <bottom>
-            <Button mnemonicParsing="false" onAction="#goBack" text="Go Back" textAlignment="RIGHT" BorderPane.alignment="CENTER" />
+            <Pane prefHeight="39.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button layoutX="351.0" layoutY="14.0" mnemonicParsing="false" onAction="#goBack" text="Home" textAlignment="RIGHT" />
+                  <Button layoutX="180.0" layoutY="1.0" mnemonicParsing="false" onAction="#save" text="Save" />
+                  <Button layoutX="104.0" layoutY="1.0" mnemonicParsing="false" text="Previous" />
+                  <Button layoutX="236.0" layoutY="1.0" mnemonicParsing="false" text="Next" />
+               </children>
+            </Pane>
          </bottom>
       </BorderPane>
    </center>

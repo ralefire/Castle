@@ -59,9 +59,19 @@ public class PDF {
      * 
      */
     public void loadQuestions() {
+        List<String> radioAnswers = new ArrayList<>();
+        List<String> checkBoxAnswers = new ArrayList<>();
+        radioAnswers.add(">1000");
+        radioAnswers.add("1000-2500");
+        radioAnswers.add("2500<");
+        checkBoxAnswers.add("This one");
+        checkBoxAnswers.add("This one too");
+        checkBoxAnswers.add("Don't forget this one");
+        checkBoxAnswers.add("lastly, this one");
         questions.add(new TextQuestion("What is your age?", "Age", "TextField"));
         questions.add(new TextQuestion("Describe the damage", "Damage", "TextArea"));
-        questions.add(new RadioQuestion("What is your house size?", "House Size", "Radio"));
+        questions.add(new RadioQuestion("What is your house size?", "House Size", "Radio", radioAnswers));
+        questions.add(new CheckBoxQuestion("Which ones do you want?", "Check Box", "CheckBox", checkBoxAnswers));
     }
     
     /**
