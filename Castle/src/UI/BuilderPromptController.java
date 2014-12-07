@@ -10,11 +10,8 @@ import Castle.PDF;
 import Castle.Question;
 import Castle.QuestionPrompter;
 import Castle.RadioQuestion;
-import Castle.TextQuestion;
-import java.awt.CheckboxGroup;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -22,7 +19,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
@@ -32,8 +28,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -106,25 +100,30 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
      * @param question 
      */
     public void formatTextArea(Question question) {
-        String answer = prompter.getAnswers().get(question);
+        List<String> answer = prompter.getAnswers().get(question);
         answerPane.getChildren().clear();
         textAreaAnswer.setMinSize(300, 200);
         textAreaAnswer.setLayoutX(13);
         textAreaAnswer.setLayoutY(38);
         textAreaAnswer.setMaxSize(374, 218);
-        setTextFieldValue(answer);
-         answerPane.getChildren().add(textAreaAnswer);
+        if (!answer.isEmpty()) {
+            setTextFieldValue(answer.get(0));
+        }
+        answerPane.getChildren().add(textAreaAnswer);
     }
     
     /**
      * 
      */
     public void formatRadioButton(RadioQuestion question) {
-        String currentAnswer = prompter.getAnswers().get(question);
+        List<String> listAnswer = prompter.getAnswers().get(question);
+        String currentAnswer = "";
         buttonBox.setLayoutX(150);
         buttonBox.setLayoutY(66);
         answerPane.getChildren().clear();
-        
+        if (!listAnswer.isEmpty()) {
+            currentAnswer = listAnswer.get(0);
+        }
         buttonBox.getChildren().clear();
         for (String posAnswer : question.getPosAnswers()) {
             RadioButton button = new RadioButton(posAnswer);
@@ -172,13 +171,14 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
      * 
      */
     public void formatTextField(Question question) {
-        String answer = prompter.getAnswers().get(question);
+        List<String> answer = prompter.getAnswers().get(question);
         textFieldAnswer.setLayoutX(116);
         textFieldAnswer.setLayoutY(116);
         answerPane.getChildren().clear();
-        
-        setTextFieldValue(answer);
-         answerPane.getChildren().add(textFieldAnswer);
+        if (!answer.isEmpty()) {
+            setTextFieldValue(answer.get(0));
+        }
+        answerPane.getChildren().add(textFieldAnswer);
     }
 
     private void setTextFieldValue(String answer) {
@@ -194,6 +194,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
      */
     @FXML
     public void goBack() {
+        pdf.setAnswers(prompter.getAnswers());
         myController.setScreen(MainUI.mainPage);
     }
     
@@ -231,7 +232,9 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
             showWarning("Please give answer before saving");
         }
         else {
-            prompter.addAnswer(question, answer);
+            List<String> answerList = new ArrayList<>();
+            answerList.add(answer);
+            prompter.addAnswer(question, answerList);
             System.out.println(prompter.getAnswers().get(question));
         }
     }
@@ -239,7 +242,9 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     public void getRadioAnswer(Question question) {
         if (radioButtons.getSelectedToggle() != null) {
             String answer = radioButtons.getSelectedToggle().getUserData().toString();
-            prompter.addAnswer(question, answer);
+            List<String> answerList = new ArrayList<>();
+            answerList.add(answer);
+            prompter.addAnswer(question, answerList);
         } else {
             showWarning("No answer selected to save");
         }
