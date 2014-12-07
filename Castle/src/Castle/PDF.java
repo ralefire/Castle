@@ -48,6 +48,7 @@ public class PDF {
     private Boolean isLoaded;           // true if pdf document is loaded, false otherwise
     Map<Question, String> answersMap;   // maps questions to answers
     private String textContent;         // represents the full PDF text content
+    private List<String> posAnswers;
 
     /**
      * default constructor
@@ -56,6 +57,7 @@ public class PDF {
        // this.answers = new HashMap<>();
         this.questions = new ArrayList();
         this.isLoaded = false;
+        this.posAnswers = new ArrayList();
     }
     
     /**
@@ -157,10 +159,10 @@ public class PDF {
                         newQuestion = new TextQuestion(prompt, hash, type); // String prompt, String hash, String type
                         System.out.println(keysJSON);
                     } else if (type.equals("RadioQuestion")) {
-                        newQuestion = new RadioQuestion(prompt, hash, type); // String prompt, String hash, String type
+                        newQuestion = new RadioQuestion(prompt, hash, type, posAnswers); // String prompt, String hash, String type
                         System.out.println(keysJSON);
                     } else if (type.equals("TextArea")) {
-                        newQuestion = new RadioQuestion(prompt, hash, type); // String prompt, String hash, String type
+                        newQuestion = new RadioQuestion(prompt, hash, type, posAnswers); // String prompt, String hash, String type
                         System.out.println(keysJSON);
                     }
                     

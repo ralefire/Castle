@@ -86,7 +86,11 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
             filename = file.getPath();
             }
         }
-        pdf.save(filename);
+        try {
+            pdf.save(filename);
+        } catch (Exception e) {
+            System.out.println("Save press pdf.save() error");
+        }
     }
     
     @FXML
@@ -107,7 +111,11 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
                 ;
             }
             filename = file.getPath();
-            pdf.save(filename);
+            try {
+                pdf.save(filename);
+            } catch (Exception e) {
+                System.out.println("Save As press pdf.save() error");
+            }
         }
     }
     
