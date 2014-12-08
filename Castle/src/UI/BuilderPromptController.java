@@ -232,26 +232,16 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     }
 
     private void saveTextAnswer(String answer, Question question) {
-        if (answer.equals("")) {
-            showWarning("Please give answer before saving");
-        }
-        else {
-            List<String> answerList = new ArrayList<>();
-            answerList.add(answer);
-            prompter.addAnswer(question, answerList);
-            System.out.println(prompter.getAnswers().get(question) + "answers question: " + question);
-        }
+        List<String> answerList = new ArrayList<>();
+        answerList.add(answer);
+        prompter.addAnswer(question, answerList);
     }
-    
+
     public void getRadioAnswer(Question question) {
-        if (radioButtons.getSelectedToggle() != null) {
-            String answer = radioButtons.getSelectedToggle().getUserData().toString();
-            List<String> answerList = new ArrayList<>();
-            answerList.add(answer);
-            prompter.addAnswer(question, answerList);
-        } else {
-            showWarning("No answer selected to save");
-        }
+        String answer = radioButtons.getSelectedToggle().getUserData().toString();
+        List<String> answerList = new ArrayList<>();
+        answerList.add(answer);
+        prompter.addAnswer(question, answerList);
     }
     
     public void getCheckBoxAnswer(Question question) {
