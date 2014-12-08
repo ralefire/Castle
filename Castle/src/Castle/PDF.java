@@ -46,8 +46,9 @@ public class PDF {
     PDDocument document;                // root PDF document object
     List<Question> questions;           // represents the PDF questions
     private Boolean isLoaded;           // true if pdf document is loaded, false otherwise
-    Map<Question, String> answersMap;   // maps questions to answers
+    Map<Question, List<String>> answersMap;   // maps questions to answers
     private String textContent;         // represents the full PDF text content
+    private List<String> posAnswers;
 
     /**
      * default constructor
@@ -56,15 +57,30 @@ public class PDF {
        // this.answers = new HashMap<>();
         this.questions = new ArrayList();
         this.isLoaded = false;
+        this.posAnswers = new ArrayList();
     }
     
     /**
      * 
      */
     public void loadQuestions() {
+        List<String> radioAnswers = new ArrayList<>();
+        List<String> checkBoxAnswers = new ArrayList<>();
+        radioAnswers.add(">1000");
+        radioAnswers.add("1000-2500");
+        radioAnswers.add("2500<");
+        checkBoxAnswers.add("This one");
+        checkBoxAnswers.add("This one too");
+        checkBoxAnswers.add("Don't forget this one");
+        checkBoxAnswers.add("lastly, this one");
         questions.add(new TextQuestion("What is your age?", "Age", "TextField"));
         questions.add(new TextQuestion("Describe the damage", "Damage", "TextArea"));
-        questions.add(new RadioQuestion("What is your house size?", "House Size", "Radio"));
+        questions.add(new RadioQuestion("What is your house size?", "House Size", "Radio", radioAnswers));
+        questions.add(new CheckBoxQuestion("Which ones do you want?", "Check Box", "CheckBox", checkBoxAnswers));
+        questions.add(new TextQuestion("What is your number?", "Number", "TextField"));
+        questions.add(new TextQuestion("Describe the flowing locks", "Hair", "TextArea"));
+        questions.add(new RadioQuestion("What is your couch size?", "Couch Size", "Radio", radioAnswers));
+        questions.add(new CheckBoxQuestion("Which other ones do you want?", "More Boxes", "CheckBox", checkBoxAnswers));
     }
     
     /**
@@ -87,7 +103,7 @@ public class PDF {
      * setter method for answers map
      * @param answersMap 
      */
-    public void setAnswers(Map<Question, String> answersMap) {
+    public void setAnswers(Map<Question, List<String>> answersMap) {
         this.answersMap = answersMap;
     }
     
@@ -147,10 +163,10 @@ public class PDF {
                         newQuestion = new TextQuestion(prompt, hash, type); // String prompt, String hash, String type
                         System.out.println(keysJSON);
                     } else if (type.equals("RadioQuestion")) {
-                        newQuestion = new RadioQuestion(prompt, hash, type); // String prompt, String hash, String type
+                        newQuestion = new RadioQuestion(prompt, hash, type, posAnswers); // String prompt, String hash, String type
                         System.out.println(keysJSON);
                     } else if (type.equals("TextArea")) {
-                        newQuestion = new RadioQuestion(prompt, hash, type); // String prompt, String hash, String type
+                        newQuestion = new RadioQuestion(prompt, hash, type, posAnswers); // String prompt, String hash, String type
                         System.out.println(keysJSON);
                     }
                     

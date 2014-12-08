@@ -20,7 +20,11 @@
             <Pane fx:id="answerPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
          </center>
          <bottom>
-            <Button mnemonicParsing="false" onAction="#goBack" text="Go Back" textAlignment="RIGHT" BorderPane.alignment="CENTER" />
+            <Pane prefHeight="39.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button layoutX="351.0" layoutY="14.0" mnemonicParsing="false" onAction="#goBack" text="Home" textAlignment="RIGHT" />
+               </children>
+            </Pane>
          </bottom>
       </BorderPane>
    </center>

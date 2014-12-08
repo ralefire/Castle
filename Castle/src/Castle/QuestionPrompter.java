@@ -10,15 +10,15 @@ import java.util.Scanner;
  * The QuestionPrompter is a GUI to ask the user questions and store the answers.
  * @author Xandron
  */
-public class QuestionPrompter implements Runnable{
+public class QuestionPrompter {
     List<Question> questions;
-    Map<Question, String> answers;
+    Map<Question, List<String>> answers;
 
     /**
      * 
      * @return Map<Question, String> 
      */
-    public Map<Question, String> getAnswers() {
+    public Map<Question, List<String>> getAnswers() {
         return answers;
     }
 
@@ -26,7 +26,7 @@ public class QuestionPrompter implements Runnable{
      * 
      * @param answers 
      */
-    public void setAnswers(Map<Question, String> answers) {
+    public void setAnswers(Map<Question, List<String>> answers) {
         this.answers = answers;
     }
 
@@ -44,27 +44,12 @@ public class QuestionPrompter implements Runnable{
      */
     public void setQuestions(List<Question> questions) {
         for (Question currentQuestion : questions) {
-            answers.put(currentQuestion, "");
+            answers.put(currentQuestion, new ArrayList<String>());
         }
     }
     
-    @Override
-    public void run() {
-        System.out.println("This will run the prompter");
-        promptQuestions();
+    public void addAnswer(Question question, List<String> answer) {
+        answers.put(question, answer);
     }
     
-    /**
-     * Prompts the user to answer each question.
-     */
-    private void promptQuestions() {
-        while(questions != null && !questions.isEmpty()) {
-            System.out.println(questions.get(0).getPrompt());
-            try (Scanner in = new Scanner(System.in)) {
-                String answer = in.nextLine();
-                answers.put(questions.get(0), answer);
-            }
-            questions.remove(0);
-        }  
-    }
 }

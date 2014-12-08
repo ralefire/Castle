@@ -58,7 +58,6 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     @FXML
     private void startPress(){
         prompter.setQuestions(pdf.getQuestions());
-        prompter.run();
         myController.loadScreen(MainUI.prompterPage, MainUI.prompterFXML);
         myController.setScreen(MainUI.prompterPage);
     }
@@ -86,7 +85,11 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
             filename = file.getPath();
             }
         }
-        pdf.save(filename);
+        try {
+            pdf.save(filename);
+        } catch (Exception e) {
+            System.out.println("Save press pdf.save() error");
+        }
     }
     
     @FXML
@@ -107,7 +110,11 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
                 ;
             }
             filename = file.getPath();
-            pdf.save(filename);
+            try {
+                pdf.save(filename);
+            } catch (Exception e) {
+                System.out.println("Save As press pdf.save() error");
+            }
         }
     }
     
