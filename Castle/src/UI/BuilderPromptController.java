@@ -55,7 +55,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
 
     TextArea textAreaAnswer = new TextArea();
     
-    CheckBox[] checkbox = null;
+    List<CheckBox> checkboxArray = new ArrayList<CheckBox>();
 
  
     VBox buttonBox = new VBox();
@@ -108,6 +108,8 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         textAreaAnswer.setMaxSize(374, 218);
         if (!answer.isEmpty()) {
             setTextFieldValue(answer.get(0));
+        } else { 
+            textAreaAnswer.clear();
         }
         answerPane.getChildren().add(textAreaAnswer);
     }
@@ -123,6 +125,8 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         answerPane.getChildren().clear();
         if (!listAnswer.isEmpty()) {
             currentAnswer = listAnswer.get(0);
+        } else {
+            buttonBox.getChildren().clear();
         }
         buttonBox.getChildren().clear();
         for (String posAnswer : question.getPosAnswers()) {
@@ -150,17 +154,17 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         buttonBox.getChildren().clear();
         
         
-        if (checkbox != null) {
-            checkbox = null;
-        }
-        
         List<String> possibleAnswers = question.getPosAnswers();
+        List<String> selectedAnswers = prompter.getAnswers().get(question);
         
-        checkbox = new CheckBox[possibleAnswers.size()];
         
-        int i = 0;
         for (String answer : possibleAnswers) {
-            CheckBox current = checkbox[i] = new CheckBox(answer);
+            
+            CheckBox current = new CheckBox(answer);
+            checkboxArray.add(current);
+            if (selectedAnswers.contains(answer)) {
+                current.setSelected(true);
+            }
             buttonBox.getChildren().add(current);
         }
         
@@ -177,6 +181,9 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         answerPane.getChildren().clear();
         if (!answer.isEmpty()) {
             setTextFieldValue(answer.get(0));
+        }
+        else {
+            textFieldAnswer.clear();
         }
         answerPane.getChildren().add(textFieldAnswer);
     }
@@ -251,6 +258,15 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     }
     
     public void getCheckBoxAnswer(Question question) {
+        String answer = "";
+        List<String> answerList = new ArrayList();
+        for (CheckBox checkbox : checkboxArray) {
+            if (checkbox.isSelected()) {
+                answer = checkbox.getText();
+                answerList.add(answer);
+            }
+        }
+        prompter.addAnswer(question, answerList);
         
     }
     
