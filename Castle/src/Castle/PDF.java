@@ -77,6 +77,10 @@ public class PDF {
         questions.add(new TextQuestion("Describe the damage", "Damage", "TextArea"));
         questions.add(new RadioQuestion("What is your house size?", "House Size", "Radio", radioAnswers));
         questions.add(new CheckBoxQuestion("Which ones do you want?", "Check Box", "CheckBox", checkBoxAnswers));
+        questions.add(new TextQuestion("What is your number?", "Number", "TextField"));
+        questions.add(new TextQuestion("Describe the flowing locks", "Hair", "TextArea"));
+        questions.add(new RadioQuestion("What is your couch size?", "Couch Size", "Radio", radioAnswers));
+        questions.add(new CheckBoxQuestion("Which other ones do you want?", "More Boxes", "CheckBox", checkBoxAnswers));
     }
     
     /**

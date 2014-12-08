@@ -78,6 +78,9 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         // Handle ListView selection changes.
         questionListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newQuestion) -> {
            questionPromptLabel.setText(newQuestion.getPrompt());
+           if (oldValue != (null)) {
+               save(oldValue);
+           }
            if (newQuestion.getType().equals("TextField")) {
                formatTextField(newQuestion);
            }
@@ -107,7 +110,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         textAreaAnswer.setLayoutY(38);
         textAreaAnswer.setMaxSize(374, 218);
         if (!answer.isEmpty()) {
-            setTextFieldValue(answer.get(0));
+            textAreaAnswer.setText(answer.get(0));
         } else { 
             textAreaAnswer.clear();
         }
@@ -157,13 +160,16 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         List<String> possibleAnswers = question.getPosAnswers();
         List<String> selectedAnswers = prompter.getAnswers().get(question);
         
-        
+        checkboxArray.clear();
         for (String answer : possibleAnswers) {
             
             CheckBox current = new CheckBox(answer);
             checkboxArray.add(current);
             if (selectedAnswers.contains(answer)) {
                 current.setSelected(true);
+            }
+            else {
+                current.setSelected(false);
             }
             buttonBox.getChildren().add(current);
         }
@@ -180,7 +186,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         textFieldAnswer.setLayoutY(116);
         answerPane.getChildren().clear();
         if (!answer.isEmpty()) {
-            setTextFieldValue(answer.get(0));
+            textFieldAnswer.setText(answer.get(0));
         }
         else {
             textFieldAnswer.clear();
@@ -188,15 +194,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         answerPane.getChildren().add(textFieldAnswer);
     }
 
-    private void setTextFieldValue(String answer) {
-        if (answer.equals("")) {
-        }
-        else {
-            textAreaAnswer.setText(answer);
-        }
-    }
-    
-    /**
+     /**
      * 
      */
     @FXML
@@ -206,9 +204,8 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     }
     
     @FXML
-    public void save() {
-        selected = questionListView.getSelectionModel().getSelectedItem().getType();
-        Question question = questionListView.getSelectionModel().getSelectedItem();
+    public void save(Question question) {
+        selected = question.getType();
         if (selected.equals("TextArea")) {
             getTextAreaAnswer(question);
         } else if (selected.equals("TextField")) {
@@ -242,7 +239,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
             List<String> answerList = new ArrayList<>();
             answerList.add(answer);
             prompter.addAnswer(question, answerList);
-            System.out.println(prompter.getAnswers().get(question));
+            System.out.println(prompter.getAnswers().get(question) + "answers question: " + question);
         }
     }
     
