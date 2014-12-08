@@ -160,6 +160,20 @@ public class PDF {
     }
     
     /**
+     * Strips the text from the PDDocument then inserts the answers from
+     * answersMap into the corresponding question Hash and loads the result
+     * into textContent
+     * @throws IOException
+     * @throws ParseException 
+     */
+    public void insertResponses() throws IOException, ParseException {
+        textContent = extractText();
+        for (Question tempQuestion : answersMap.keySet()) {
+           textContent = textContent.replaceAll(tempQuestion.getHash(), answersMap.get(tempQuestion)); // REGEX, Replacement
+        }
+    }  
+    
+    /**
      * This saves the PDF to the filename specified. 
      * @param filePath
      * @throws java.io.IOException
@@ -187,40 +201,43 @@ public class PDF {
         textContent = extractText();
         
 
-    }
-    
+    } 
     
     /**
      * Generates a new PDF and saves it to a file
      * @throws java.io.IOException
      */
-    public void buildPDF() throws IOException {
+    public void buildPDF(String savePath) throws IOException {
         //Document luceneDocument = LucenePDFDocument.getDocument();
-        PDDocument doc = null;
-        PDPage page = null;
+        PDDocument doc = new PDDocument();
+        PDPage page = new PDPage();
+        doc.setDocumentInformation(document.getDocumentInformation());
+        
+        try {
+            doc.addPage(page);
+            PDFont font = PDType1Font.HELVETICA_BOLD;
 
-        doc = new PDDocument();
-        try{
-           doc = new PDDocument();
-           page = new PDPage();
+            PDPageContentStream content = new PDPageContentStream(doc, page);
 
-           doc.addPage(page);
-           PDFont font = PDType1Font.HELVETICA_BOLD;
+            String lines[] = textContent.split("\\n");
+            int xAxis = 30;
+            int yAxis = 700;
+            for (String line : lines) {
+                content.beginText();
+                content.setFont( font, 12 ); // set font (mandatory)
+                content.moveTextPositionByAmount( xAxis, yAxis -= 20); // set text position (mandatory)
+                content.drawString(line); // enter text
+                content.endText();
+           }
 
-           PDPageContentStream PDPContent = new PDPageContentStream(doc, page);
-           PDPContent.beginText();
-           PDPContent.setFont( font, 12 ); // set font (mandatory)
-           PDPContent.moveTextPositionByAmount( 100, 100 ); // set text position (mandatory)
-           PDPContent.drawString("This is an awesome PDF"); // enter text
-           PDPContent.endText(); 
-           PDPContent.close();
-           doc.save("test.pdf"); // save
-           
+            content.close();
+            doc.save(savePath); // save
+            doc.close(); // close
         } catch (IOException | COSVisitorException io){
             System.out.println(io);
         } finally {
             if (doc != null)
-                doc.close(); // close
+                doc.close();
         }
     }
   
