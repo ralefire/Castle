@@ -185,7 +185,12 @@ public class PDF {
     public void insertResponses() throws IOException, ParseException {
         textContent = extractText();
         for (Question tempQuestion : answersMap.keySet()) {
-           textContent = textContent.replaceAll(tempQuestion.getHash(), answersMap.get(tempQuestion)); // REGEX, Replacement
+           String answer = "";
+           for (String tempAnswer : answersMap.get(tempQuestion)) {
+                answer += (tempAnswer + " ");
+           }
+           
+           textContent = textContent.replaceAll(tempQuestion.getHash(), answer); // REGEX, Replacement
         }
     }  
     
