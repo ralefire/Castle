@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,20 +46,20 @@ public class PDF {
     
 
     private PDDocument document;                // root PDF document object
-    List<Question> questions;           // represents the PDF questions
+    private List<Question> questions;           // represents the PDF questions
     private Boolean isLoaded;           // true if pdf document is loaded, false otherwise
-    Map<Question, List<String>> answersMap;   // maps questions to answers
+    private Map<Question, List<String>> answersMap;   // maps questions to answers
     private String textContent;         // represents the full PDF text content
-    private List<String> posAnswers;
+    private final List<String> posAnswers;
 
     /**
      * default constructor
      */
     public PDF() {
        // this.answers = new HashMap<>();
-        this.questions = new ArrayList();
+        this.questions = new ArrayList<>();
         this.isLoaded = false;
-        this.posAnswers = new ArrayList();
+        this.posAnswers = new ArrayList<>();
     }
     
     /**
@@ -89,7 +90,7 @@ public class PDF {
      * @return questions
      */
     public List<Question> getQuestions() {
-        return questions;
+        return Collections.unmodifiableList(questions);
     }
     
     /**
@@ -135,7 +136,6 @@ public class PDF {
         
         if (jsonKeysArray != null) {
 
-            String keys = "";
             Iterator<JSONObject> jsonKeysIterator = jsonKeysArray.iterator();
             while (jsonKeysIterator.hasNext()) {
                 
@@ -160,15 +160,19 @@ public class PDF {
                         type = (String)value;
                     }                    
                     Question newQuestion;
-                    if (type.equals("TextField")) {
-                        newQuestion = new TextQuestion(prompt, hash, type); // String prompt, String hash, String type
-                        System.out.println(keysJSON);
-                    } else if (type.equals("RadioQuestion")) {
-                        newQuestion = new RadioQuestion(prompt, hash, type, posAnswers); // String prompt, String hash, String type
-                        System.out.println(keysJSON);
-                    } else if (type.equals("TextArea")) {
-                        newQuestion = new RadioQuestion(prompt, hash, type, posAnswers); // String prompt, String hash, String type
-                        System.out.println(keysJSON);
+                    switch (type) {
+                        case "TextField":
+                            newQuestion = new TextQuestion(prompt, hash, type); // String prompt, String hash, String type
+                            System.out.println(keysJSON);
+                            break;
+                        case "RadioQuestion":
+                            newQuestion = new RadioQuestion(prompt, hash, type, posAnswers); // String prompt, String hash, String type
+                            System.out.println(keysJSON);
+                            break;
+                        case "TextArea":
+                            newQuestion = new RadioQuestion(prompt, hash, type, posAnswers); // String prompt, String hash, String type
+                            System.out.println(keysJSON);
+                            break;
                     }
                     
                 });
@@ -185,15 +189,14 @@ public class PDF {
      */
     public void insertResponses() throws IOException, ParseException {
         textContent = extractText();
-        for (Question tempQuestion : answersMap.keySet()) {
-           String answer = "";
-           for (String tempAnswer : answersMap.get(tempQuestion)) {
-                answer += (tempAnswer + " ");
-           }
-        
-           textContent = textContent.replaceAll(tempQuestion.getHash(), answer); // REGEX, Replacement
-        }
-    }  
+
+        answersMap.keySet().stream().forEach((tempQuestion) -> {
+            String answer = "";
+            answer = answersMap.get(tempQuestion).stream().map((tempAnswer) -> (tempAnswer + " ")).reduce(answer, String::concat);
+            
+            textContent = textContent.replaceAll(tempQuestion.getHash(), answer); // REGEX, Replacement
+        });
+    }
     
     /**
      * This saves the PDF to the filename specified. 
@@ -203,9 +206,9 @@ public class PDF {
      */
     public void save(String filePath) throws IOException, COSVisitorException{
         File file = new File(filePath);
-        OutputStream out = new FileOutputStream(file);
-        document.save(out);
-        out.close();
+        try (OutputStream out = new FileOutputStream(file)) {
+            document.save(out);
+        }
     }
     
     /**
@@ -243,6 +246,7 @@ public class PDF {
     
     /**
      * Generates a new PDF and saves it to a file
+     * @param savePath
      * @throws java.io.IOException
      */
         public void buildPDF(String savePath) throws IOException, Exception {
@@ -283,7 +287,6 @@ public class PDF {
             fontSize = textPos.getFontSize();
             String fontName = font.toString();
 
-            
             switch(fontName) {
                 case "org.apache.pdfbox.pdmodel.font.PDType0Font@7a46a697":
                     font = PDType1Font.TIMES_ROMAN;
@@ -343,10 +346,11 @@ public class PDF {
     /**
      * This function copies all of the text from the PDF and returns it
      * 
+     * @return 
      * @throws IOException 
      */
     public String extractText() throws IOException {
-        String content = "";
+        String content;
         PDFTextStripper stripper = new PDFTextStripper();
         content = stripper.getText(document);
         return content;
@@ -402,7 +406,7 @@ public class PDF {
         fileSpec.setEmbeddedFile(pdEmbedFile );
 
         //add the entry to the embedded file tree and set in the document.
-        Map efMap = new HashMap();
+        Map<String, PDComplexFileSpecification> efMap = new HashMap<>();
         efMap.put("My first attachment", fileSpec );
         efTree.setNames( efMap );
         
@@ -453,9 +457,9 @@ public class PDF {
         String embeddedFilename = filePath + filename;
         File file = new File(filePath + filename);
         System.out.println("Writing " + embeddedFilename);
-        FileOutputStream fos = new FileOutputStream(file);
-        fos.write(embeddedFile.getByteArray());
-        fos.close();
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(embeddedFile.getByteArray());
+        }
     }
     
     public static PDEmbeddedFile getEmbeddedFile(PDComplexFileSpecification fileSpec )
