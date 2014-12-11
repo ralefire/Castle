@@ -71,10 +71,10 @@ public class PDF {
         answersMap.put(new Question("", "Damage", ""), emptyList);
         answersMap.put(new Question("", "House Size", ""), emptyList);
         answersMap.put(new Question("", "Check Box", ""), emptyList);
-        answersMap.put(new Question("What is your number?", "Number", "TextField"), emptyList);
-        answersMap.put(new Question("Describe the flowing locks", "Hair", "TextArea"), emptyList);
-        answersMap.put(new Question("What is your couch size?", "Couch Size", "Radio"), emptyList);
-        answersMap.put(new Question("Which other ones do you want?", "More Boxes", "CheckBox"), emptyList);
+        //answersMap.put(new Question("What is your number?", "Number", "TextField"), emptyList);
+        //answersMap.put(new Question("Describe the flowing locks", "Hair", "TextArea"), emptyList);
+        //answersMap.put(new Question("What is your couch size?", "Couch Size", "Radio"), emptyList);
+        //answersMap.put(new Question("Which other ones do you want?", "More Boxes", "CheckBox"), emptyList);
     }
     
     /**

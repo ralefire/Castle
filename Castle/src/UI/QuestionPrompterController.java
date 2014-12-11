@@ -231,7 +231,7 @@ public class QuestionPrompterController implements Initializable, ControlledScre
                     List<String> newPosAnswers = new ArrayList<>();
                     for (TextField fieldToSave : posAnswerList) {
                         if (!fieldToSave.getText().equals("")) {
-                            newPosAnswers.add(fieldToSave.getText());
+                            newPosAnswers.add(fieldToSave.getText().trim());
                         }
                     }   question.setType(nextType);
                     question.setPosAnswers(newPosAnswers);

@@ -1,23 +1,21 @@
 package Castle;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 /**
  * The QuestionPrompter is a GUI to ask the user questions and store the answers.
  * @author Xandron
  */
 public class QuestionPrompter {
-    Map<Question, List<String>> answers;
+    Map<Question, String> answers;
 
     /**
      * 
      * @return Map<Question, String> 
      */
-    public Map<Question, List<String>> getAnswers() {
+    public Map<Question, String> getAnswers() {
         return answers;
     }
 
@@ -25,7 +23,7 @@ public class QuestionPrompter {
      * 
      * @param answers 
      */
-    public void setAnswers(Map<Question, List<String>> answers) {
+    public void setAnswers(Map<Question, String> answers) {
         this.answers = answers;
     }
 
@@ -41,12 +39,13 @@ public class QuestionPrompter {
      * @param questions 
      */
     public void setQuestions(List<Question> questions) {
+        String emptyString = "";
         for (Question currentQuestion : questions) {
-            answers.put(currentQuestion, new ArrayList<String>());
+            answers.put(currentQuestion, emptyString);
         }
     }
     
-    public void addAnswer(Question question, List<String> answer) {
+    public void addAnswer(Question question, String answer) {
         answers.put(question, answer);
     }
     
