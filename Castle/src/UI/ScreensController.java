@@ -76,5 +76,6 @@ public class ScreensController extends StackPane {
     public void setParams(PDF pdf, QuestionPrompter prompter) {
         this.pdf = pdf;
         this.prompter = prompter;
+        prompter.setAnswers(pdf.getQuestionMap());
     }
 }

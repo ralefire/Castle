@@ -5,19 +5,32 @@
  */
 package Castle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author Admin
  */
-abstract public class Question {
+public class Question {
     private String prompt;
     private String hash;
     private String type;
+    private List<String> posAnswers;
+
 
     public Question(String prompt, String hash, String type) {
         this.prompt = prompt;
         this.hash = hash;
         this.type = type;
+        this.posAnswers = new ArrayList<>();
+    }
+
+    public Question(String prompt, String hash, String type, List<String> posAnswers) {
+        this.prompt = prompt;
+        this.hash = hash;
+        this.type = type;
+        this.posAnswers = posAnswers;
     }
     
     public String getPrompt() {
@@ -42,6 +55,14 @@ abstract public class Question {
 
     public void setType(String type) {
         this.type = type;
+    }
+    
+    public List<String> getPosAnswers() {
+        return posAnswers;
+    }
+
+    public void setPosAnswers(List<String> posAnswers) {
+        this.posAnswers = posAnswers;
     }
     
     @Override

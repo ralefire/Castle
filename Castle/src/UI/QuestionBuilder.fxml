@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UI.QuestionPrompterController">
+   <left>
+      <ListView fx:id="questionListView" maxWidth="-Infinity" prefHeight="400.0" prefWidth="125.0" BorderPane.alignment="CENTER" />
+   </left>
+   <center>
+      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <top>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label text="What is the question for the key:" textAlignment="CENTER">
+                     <font>
+                        <Font size="26.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="hashNameLabel">
+                     <font>
+                        <Font size="26.0" />
+                     </font>
+                  </Label>
+                  <TextArea fx:id="questionArea" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="48.0" prefWidth="356.0" />
+               </children>
+            </VBox>
+         </top>
+         <bottom>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="TOP_CENTER">
+               <children>
+                  <Label text="What type of question is it?" textAlignment="CENTER">
+                     <font>
+                        <Font size="26.0" />
+                     </font>
+                  </Label>
+                  <HBox fx:id="posAnswer" alignment="TOP_CENTER" prefHeight="168.0" prefWidth="475.0" VBox.vgrow="NEVER">
+                     <children>
+                        <VBox fx:id="questionBox" maxWidth="-Infinity" prefHeight="163.0" prefWidth="174.0" />
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </HBox>
+               </children>
+            </VBox>
+         </bottom>
+      </BorderPane>
+   </center>
+   <right>
+      <Button mnemonicParsing="false" onAction="#finish" text="Finish" BorderPane.alignment="BOTTOM_RIGHT" />
+   </right>
+</BorderPane>
