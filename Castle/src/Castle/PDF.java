@@ -68,27 +68,15 @@ public class PDF {
      * 
      */
     public void loadQuestions() {
-        List<String> radioAnswers = new ArrayList<>();
-        List<String> checkBoxAnswers = new ArrayList<>();
-        List<String> emptyList = new ArrayList<>();
-        List<String> emptyList3 = new ArrayList<>();
-        List<String> emptyList2 = new ArrayList<>();
-        List<String> emptyList1 = new ArrayList<>();
-        radioAnswers.add(">1000");
-        radioAnswers.add("1000-2500");
-        radioAnswers.add("2500<");
-        checkBoxAnswers.add("This one");
-        checkBoxAnswers.add("This one too");
-        checkBoxAnswers.add("Don't forget this one");
-        checkBoxAnswers.add("lastly, this one");
+        String emptyList = "";
         answersMap.put(new Question("", "Age", ""), emptyList);
         answersMap.put(new Question("", "Damage", ""), emptyList);
         answersMap.put(new Question("", "House Size", ""), emptyList);
         answersMap.put(new Question("", "Check Box", ""), emptyList);
         answersMap.put(new Question("What is your number?", "Number", "TextField"), emptyList);
         answersMap.put(new Question("Describe the flowing locks", "Hair", "TextArea"), emptyList);
-        answersMap.put(new Question("What is your couch size?", "Couch Size", "Radio", radioAnswers), emptyList);
-        answersMap.put(new Question("Which other ones do you want?", "More Boxes", "CheckBox", checkBoxAnswers), emptyList);
+        answersMap.put(new Question("What is your couch size?", "Couch Size", "Radio"), emptyList);
+        answersMap.put(new Question("Which other ones do you want?", "More Boxes", "CheckBox"), emptyList);
     }
     
     /**
@@ -110,7 +98,7 @@ public class PDF {
         this.answersMap = answersMap;
     }
     
-    public Map<Question, List<String>> getQuestionMap() {
+    public Map<Question, String> getQuestionMap() {
         return answersMap;
     }
     
