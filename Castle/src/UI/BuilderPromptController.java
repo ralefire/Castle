@@ -5,11 +5,9 @@
  */
 package UI;
 
-import Castle.CheckBoxQuestion;
 import Castle.PDF;
 import Castle.Question;
 import Castle.QuestionPrompter;
-import Castle.RadioQuestion;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +43,6 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     
     PDF pdf;
     QuestionPrompter prompter; 
-    String filename = "";
     
     String selected = "";
     
@@ -56,7 +53,6 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     TextArea textAreaAnswer = new TextArea();
     
     List<CheckBox> checkboxArray = new ArrayList<CheckBox>();
-
  
     VBox buttonBox = new VBox();
     
@@ -86,14 +82,14 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
            }
            
            else if (newQuestion.getType().equals("Radio")) {
-               formatRadioButton((RadioQuestion)newQuestion);
+               formatRadioButton((Question)newQuestion);
            }
            
            else if (newQuestion.getType().equals("TextArea")) {
                formatTextArea(newQuestion);
            }
            else if (newQuestion.getType().equals("CheckBox")) {
-               formatCheckBox((CheckBoxQuestion)newQuestion);
+               formatCheckBox((Question)newQuestion);
            }
         });
     }    
@@ -120,7 +116,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     /**
      * 
      */
-    public void formatRadioButton(RadioQuestion question) {
+    public void formatRadioButton(Question question) {
         List<String> listAnswer = prompter.getAnswers().get(question);
         String currentAnswer = "";
         buttonBox.setLayoutX(150);
@@ -128,9 +124,8 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         answerPane.getChildren().clear();
         if (!listAnswer.isEmpty()) {
             currentAnswer = listAnswer.get(0);
-        } else {
-            buttonBox.getChildren().clear();
-        }
+        } 
+        
         buttonBox.getChildren().clear();
         for (String posAnswer : question.getPosAnswers()) {
             RadioButton button = new RadioButton(posAnswer);
@@ -148,7 +143,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     /**
      * 
      */
-    private void formatCheckBox(CheckBoxQuestion question) {
+    private void formatCheckBox(Question question) {
         buttonBox.setLayoutX(150);
         buttonBox.setLayoutY(66);
         answerPane.getChildren().clear();
@@ -199,7 +194,6 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
      */
     @FXML
     public void goBack() {
-        pdf.setAnswers(prompter.getAnswers());
         myController.setScreen(MainUI.mainPage);
     }
     
@@ -232,16 +226,18 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     }
 
     private void saveTextAnswer(String answer, Question question) {
-        List<String> answerList = new ArrayList<>();
+        List<String> answerList = new ArrayList<>(); 
         answerList.add(answer);
         prompter.addAnswer(question, answerList);
     }
 
     public void getRadioAnswer(Question question) {
-        String answer = radioButtons.getSelectedToggle().getUserData().toString();
-        List<String> answerList = new ArrayList<>();
-        answerList.add(answer);
-        prompter.addAnswer(question, answerList);
+        if (radioButtons.getSelectedToggle() != null) {
+            String answer = radioButtons.getSelectedToggle().getUserData().toString();
+            List<String> answerList = new ArrayList<>();
+            answerList.add(answer);
+            prompter.addAnswer(question, answerList);
+        }
     }
     
     public void getCheckBoxAnswer(Question question) {
@@ -265,7 +261,6 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         myController = screenParent;
         this.pdf = myController.pdf;
         this.prompter = myController.prompter;
-        this.filename = myController.filename;
         setQuestions();
     }
     
@@ -277,8 +272,6 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         
         for (Question question : questionSet) {
             questions.add(question);
-            /*String hash = question.getHash();
-            questions.add(hash);*/
         }
         questionListView.setItems(questions);
     }

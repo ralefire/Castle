@@ -57,9 +57,13 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     
     @FXML
     private void startPress(){
-        prompter.setQuestions(pdf.getQuestions());
-        myController.loadScreen(MainUI.prompterPage, MainUI.prompterFXML);
-        myController.setScreen(MainUI.prompterPage);
+        if (!pdf.getQuestionsLoaded()) {
+            myController.loadScreen(MainUI.builderPage, MainUI.builderFXML);
+            myController.setScreen(MainUI.builderPage);
+        } else {
+            myController.loadScreen(MainUI.prompterPage, MainUI.prompterFXML);
+            myController.setScreen(MainUI.prompterPage);
+        }
     }
     
     @FXML

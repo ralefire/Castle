@@ -11,7 +11,6 @@ import java.util.Scanner;
  * @author Xandron
  */
 public class QuestionPrompter {
-    List<Question> questions;
     Map<Question, List<String>> answers;
 
     /**
@@ -35,9 +34,8 @@ public class QuestionPrompter {
      */
     public QuestionPrompter(){
         this.answers = new HashMap<>();
-        this.questions = new ArrayList<>();
     }
-
+    
     /**
      * 
      * @param questions 

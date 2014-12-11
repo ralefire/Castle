@@ -24,6 +24,8 @@ public class MainUI extends Application {
     public static String mainFXML = "FXMLDocument.fxml";
     public static String prompterPage = "prompter";
     public static String prompterFXML = "BuilderPrompt.fxml";
+    public static String builderPage = "builder";
+    public static String builderFXML = "QuestionBuilder.fxml";
     
     @Override
     public void start(Stage primaryStage) throws Exception {
