@@ -49,7 +49,6 @@ public class PDF {
     private Boolean isLoaded;           // true if pdf document is loaded, false otherwise
     private Map<Question, List<String>> answersMap;   // maps questions to answers
     private String textContent;         // represents the full PDF text content
-    private List<String> posAnswers;
     private boolean questionsLoaded;
 
     /**
@@ -58,7 +57,6 @@ public class PDF {
     public PDF() {
        // this.answers = new HashMap<>();
         this.isLoaded = false;
-        this.posAnswers = new ArrayList();
         this.answersMap = new HashMap();
         this.questionsLoaded = false;
     }
