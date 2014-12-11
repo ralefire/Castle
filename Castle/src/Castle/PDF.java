@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,6 +31,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
+import org.apache.pdfbox.util.TextPosition;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -46,7 +48,7 @@ public class PDF {
     PDDocument document;                // root PDF document object
     //List<Question> questions;           // represents the PDF questions
     private Boolean isLoaded;           // true if pdf document is loaded, false otherwise
-    Map<Question, List<String>> answersMap;   // maps questions to answers
+    private Map<Question, List<String>> answersMap;   // maps questions to answers
     private String textContent;         // represents the full PDF text content
     private List<String> posAnswers;
     private boolean questionsLoaded;
@@ -139,7 +141,6 @@ public class PDF {
         
         if (jsonKeysArray != null) {
 
-            String keys = "";
             Iterator<JSONObject> jsonKeysIterator = jsonKeysArray.iterator();
             while (jsonKeysIterator.hasNext()) {
                 
@@ -181,6 +182,24 @@ public class PDF {
     }
     
     /**
+     * Strips the text from the PDDocument then inserts the answers from
+     * answersMap into the corresponding question Hash and loads the result
+     * into textContent
+     * @throws IOException
+     * @throws ParseException 
+     */
+    public void insertResponses() throws IOException, ParseException {
+        textContent = extractText();
+
+        answersMap.keySet().stream().forEach((tempQuestion) -> {
+            String answer = "";
+            answer = answersMap.get(tempQuestion).stream().map((tempAnswer) -> (tempAnswer + " ")).reduce(answer, String::concat);
+            
+            textContent = textContent.replaceAll(tempQuestion.getHash(), answer); // REGEX, Replacement
+        });
+    }
+    
+    /**
      * This saves the PDF to the filename specified. 
      * @param filePath
      * @throws java.io.IOException
@@ -188,8 +207,24 @@ public class PDF {
      */
     public void save(String filePath) throws IOException, COSVisitorException{
         File file = new File(filePath);
+        try (OutputStream out = new FileOutputStream(file)) {
+            document.save(out);
+        }
+    }
+    
+    /**
+     * This saves the PDF to the filename specified.
+     * @param doc
+     * @param filePath
+     * @throws java.io.IOException 
+     * @throws org.apache.pdfbox.exceptions.COSVisitorException 
+     */
+    public void save(PDDocument doc, String filePath) throws IOException, COSVisitorException{
+        if (doc == null)
+            return;
+        File file = new File(filePath);
         OutputStream out = new FileOutputStream(file);
-        document.save(out);
+        doc.save(out);
         out.close();
     }
     
@@ -208,50 +243,115 @@ public class PDF {
         textContent = extractText();
         
 
-    }
-    
+    } 
     
     /**
      * Generates a new PDF and saves it to a file
+     * @param savePath
      * @throws java.io.IOException
      */
-    public void buildPDF() throws IOException {
-        //Document luceneDocument = LucenePDFDocument.getDocument();
-        PDDocument doc = null;
-        PDPage page = null;
+        public void buildPDF(String savePath) throws IOException, Exception {
+        PDDocument doc = new PDDocument();
+        PDPage page = new PDPage();
+        doc.setDocumentInformation(document.getDocumentInformation());
+        
+        String tContent = "";
+        TextStripper stripper = new TextStripper();
+        stripper.processLocation(document);
+        List<TextPosition> characters = stripper.getCharacters();
+        
+        PDFont font = PDType1Font.HELVETICA_BOLD;
+        float fontSize;
+        PDPageContentStream content = new PDPageContentStream(doc, page);
+        float xAxis;
+        float yAxis;
+        
+        doc.addPage(page);
+        Iterator<TextPosition> it = characters.iterator();
+        Iterator<TextPosition> it1 = characters.iterator();
+        if (it1.hasNext())
+            it1.next();
+        
+        content.beginText();
+        while (it.hasNext()) {
+            TextPosition textPos = it.next();
+            TextPosition textPos1;
+            if (it1.hasNext()) {
+                textPos1 = it1.next();
+            } else {
+                textPos1 = null;
+            }
+            
+            String textCharacter = textPos.getCharacter();
+            
+            font = textPos.getFont();
+            fontSize = textPos.getFontSize();
+            String fontName = font.toString();
 
-        doc = new PDDocument();
-        try{
-           doc = new PDDocument();
-           page = new PDPage();
-
-           doc.addPage(page);
-           PDFont font = PDType1Font.HELVETICA_BOLD;
-
-           PDPageContentStream PDPContent = new PDPageContentStream(doc, page);
-           PDPContent.beginText();
-           PDPContent.setFont( font, 12 ); // set font (mandatory)
-           PDPContent.moveTextPositionByAmount( 100, 100 ); // set text position (mandatory)
-           PDPContent.drawString("This is an awesome PDF"); // enter text
-           PDPContent.endText(); 
-           PDPContent.close();
-           doc.save("test.pdf"); // save
+            switch(fontName) {
+                case "org.apache.pdfbox.pdmodel.font.PDType0Font@7a46a697":
+                    font = PDType1Font.TIMES_ROMAN;
+                    if (fontSize > 18)
+                        font = PDType1Font.TIMES_BOLD;
+                    break;
+                default:
+                    font = PDType1Font.TIMES_ROMAN; //"org.apache.pdfbox.pdmodel.font.PDType0Font@3d04a311"
+            }
+            
+            xAxis = textPos.getXDirAdj();
+            yAxis = textPos.getYDirAdj();
+            
+            if (textCharacter.equals("@") && textPos1 != null && textPos1.getCharacter().equals("@")) {
+                
+                //TODO Add the answers replacement algorithm
+//                while (it.hasNext()) {
+//                    if 
+//                }
+                
+            }
+            //TODO build the PDF character by character
+            
+            content.setFont( font, fontSize ); // set font (mandatory)
+        // System.out.println("X: " + xAxis + ", Y: " + yAxis);
+            content.moveTextPositionByAmount(0, 0); // Reset the reference point
+            content.moveTextPositionByAmount( xAxis, 800 - yAxis ); // set text position (mandatory)
            
-        } catch (IOException | COSVisitorException io){
-            System.out.println(io);
-        } finally {
-            if (doc != null)
-                doc.close(); // close
+            
+            content.drawString(textCharacter); // enter text
+
+            if (xAxis >= 90) {
+                content.endText();
+                content.beginText();
+            }
+            
         }
+        content.endText();
+        
+//        String lines[] = textContent.split("\\n");
+//        int xAxis = 30;
+//        int yAxis = 700;
+//
+//        for (String line : lines) {
+//            content.beginText();
+//            content.setFont( font, 12 ); // set font (mandatory)
+//            content.moveTextPositionByAmount( xAxis, yAxis -= 20); // set text position (mandatory)
+//            content.drawString(line); // enter text
+//            content.endText();
+//        }
+
+            content.close();
+            save(doc, savePath); // save
+            doc.close(); // close
     }
   
     /**
      * This function copies all of the text from the PDF and returns it
      * 
+     * @return 
      * @throws IOException 
      */
     public String extractText() throws IOException {
-        String content = "";
+        String content;
         PDFTextStripper stripper = new PDFTextStripper();
         content = stripper.getText(document);
         return content;
@@ -307,7 +407,7 @@ public class PDF {
         fileSpec.setEmbeddedFile(pdEmbedFile );
 
         //add the entry to the embedded file tree and set in the document.
-        Map efMap = new HashMap();
+        Map<String, PDComplexFileSpecification> efMap = new HashMap<>();
         efMap.put("My first attachment", fileSpec );
         efTree.setNames( efMap );
         
@@ -358,9 +458,9 @@ public class PDF {
         String embeddedFilename = filePath + filename;
         File file = new File(filePath + filename);
         System.out.println("Writing " + embeddedFilename);
-        FileOutputStream fos = new FileOutputStream(file);
-        fos.write(embeddedFile.getByteArray());
-        fos.close();
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(embeddedFile.getByteArray());
+        }
     }
     
     public static PDEmbeddedFile getEmbeddedFile(PDComplexFileSpecification fileSpec )

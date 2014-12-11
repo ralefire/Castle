@@ -39,35 +39,37 @@ import javafx.stage.Stage;
  */
 public class BuilderPromptController implements Initializable, ControlledScreen {
 
-    ScreensController myController;
+    private ScreensController myController;
     
     PDF pdf;
     QuestionPrompter prompter; 
     
-    String selected = "";
+    private String selected = "";
     
-    ToggleGroup radioButtons = new ToggleGroup();
+    private final ToggleGroup radioButtons = new ToggleGroup();
     
-    TextField textFieldAnswer = new TextField();
+    private final TextField textFieldAnswer = new TextField();
 
-    TextArea textAreaAnswer = new TextArea();
+    private final TextArea textAreaAnswer = new TextArea();
     
     List<CheckBox> checkboxArray = new ArrayList<CheckBox>();
  
-    VBox buttonBox = new VBox();
+    private final VBox buttonBox = new VBox();
     
     @FXML
-    Pane answerPane;
+    private Pane answerPane;
     
     @FXML 
-    Label questionPromptLabel;
+    private Label questionPromptLabel;
     
     @FXML
-    ListView<Question> questionListView;
-    ObservableList<Question> questions = FXCollections.observableArrayList();
+    private ListView<Question> questionListView;
+    private final ObservableList<Question> questions = FXCollections.observableArrayList();
     
     /**
      * Initializes the controller class. 
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -115,6 +117,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     
     /**
      * 
+     * @param question
      */
     public void formatRadioButton(Question question) {
         List<String> listAnswer = prompter.getAnswers().get(question);
@@ -174,6 +177,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     
     /**
      * 
+     * @param question
      */
     public void formatTextField(Question question) {
         List<String> answer = prompter.getAnswers().get(question);
@@ -200,14 +204,19 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     @FXML
     public void save(Question question) {
         selected = question.getType();
-        if (selected.equals("TextArea")) {
-            getTextAreaAnswer(question);
-        } else if (selected.equals("TextField")) {
-            getTextFieldAnswer(question);
-        } else if (selected.equals("Radio")) {
-            getRadioAnswer(question);
-        } else if (selected.equals("CheckBox")) {
-            getCheckBoxAnswer(question);
+        switch (selected) {
+            case "TextArea":
+                getTextAreaAnswer(question);
+                break;
+            case "TextField":
+                getTextFieldAnswer(question);
+                break;
+            case "Radio":
+                getRadioAnswer(question);
+                break;
+            case "CheckBox":
+                getCheckBoxAnswer(question);
+                break;
         }
         
     }
@@ -232,16 +241,19 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     }
 
     public void getRadioAnswer(Question question) {
+        String answer;
         if (radioButtons.getSelectedToggle() != null) {
-            String answer = radioButtons.getSelectedToggle().getUserData().toString();
-            List<String> answerList = new ArrayList<>();
-            answerList.add(answer);
-            prompter.addAnswer(question, answerList);
+            answer = radioButtons.getSelectedToggle().getUserData().toString();
+        } else {
+            answer = null;
         }
+        List<String> answerList = new ArrayList<>();
+        answerList.add(answer);
+        prompter.addAnswer(question, answerList);
     }
     
     public void getCheckBoxAnswer(Question question) {
-        String answer = "";
+        String answer;
         List<String> answerList = new ArrayList();
         for (CheckBox checkbox : checkboxArray) {
             if (checkbox.isSelected()) {
@@ -257,6 +269,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
      * 
      * @param screenParent 
      */
+    @Override
     public void setScreenParent(ScreensController screenParent) {
         myController = screenParent;
         this.pdf = myController.pdf;
