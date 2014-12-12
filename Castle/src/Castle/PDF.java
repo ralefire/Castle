@@ -65,12 +65,12 @@ public class PDF {
      * 
      */
     public void loadQuestions() {
-        String emptyList = "";
-        answersMap.put(new Question("", "Age", ""), emptyList);
-        answersMap.put(new Question("", "Damage", ""), emptyList);
-        answersMap.put(new Question("", "House Size", ""), emptyList);
-        answersMap.put(new Question("", "Check Box", ""), emptyList);
-        //answersMap.put(new Question("What is your number?", "Number", "TextField"), emptyList);
+//        String emptyList = "";
+//        answersMap.put(new Question("", "Age", ""), emptyList);
+//        answersMap.put(new Question("", "Damage", ""), emptyList);
+//        answersMap.put(new Question("", "House Size", ""), emptyList);
+//        answersMap.put(new Question("", "Check Box", ""), emptyList);
+//        //answersMap.put(new Question("What is your number?", "Number", "TextField"), emptyList);
         //answersMap.put(new Question("Describe the flowing locks", "Hair", "TextArea"), emptyList);
         //answersMap.put(new Question("What is your couch size?", "Couch Size", "Radio"), emptyList);
         //answersMap.put(new Question("Which other ones do you want?", "More Boxes", "CheckBox"), emptyList);
@@ -137,7 +137,7 @@ public class PDF {
                     String hash = "";
                     String type = "";
                     
-                   // System.out.println(value);
+                    System.out.println(value);
 
                     if (key.equals("prompt")) {
                         prompt = (String)value;
@@ -149,18 +149,9 @@ public class PDF {
                     {
                         type = (String)value;
                     }                    
-                    Question newQuestion;
-                    if (type.equals("TextField")) {
-                        newQuestion = new Question(prompt, hash, type); // String prompt, String hash, String type
-                        System.out.println(keysJSON);
-                    } else if (type.equals("RadioQuestion")) {
-                        newQuestion = new Question(prompt, hash, type); // String prompt, String hash, String type
-                        System.out.println(keysJSON);
-                    } else if (type.equals("TextArea")) {
-                        newQuestion = new Question(prompt, hash, type); // String prompt, String hash, String type
-                        System.out.println(keysJSON);
-                    }
-                    
+                    String answer= "";
+                    Question newQuestion = new Question(prompt, hash, type); // String prompt, String hash, String type
+                    answersMap.put(newQuestion, answer);
                 });
             }
         }

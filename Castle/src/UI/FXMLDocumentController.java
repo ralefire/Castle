@@ -57,6 +57,7 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     
     @FXML
     private void startPress(){
+        System.out.println(pdf.getQuestionMap().size());
         if (!pdf.getQuestionsLoaded()) {
             myController.loadScreen(MainUI.builderPage, MainUI.builderFXML);
             myController.setScreen(MainUI.builderPage);
@@ -130,6 +131,29 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     @FXML
     private void loadPress() {
         System.out.println("Loading...");
+        FileChooser chooser = new FileChooser();
+        File file = chooser.showOpenDialog(new Stage());
+        if (file == null) {
+            showWarning("No file selected or created");
+            filename = "";
+        } else {
+
+            try {
+                if (!file.exists()) {
+                    file.createNewFile();
+                }
+            } catch (Exception e) {
+                ;
+            }
+
+            filename = file.getPath();
+        }
+
+        try {
+        pdf.load(filename);
+        } catch (Exception e) {
+            ;
+        }
         pdf.loadQuestions();
         startButton.setDisable(false);
         saveButton.setDisable(false);
