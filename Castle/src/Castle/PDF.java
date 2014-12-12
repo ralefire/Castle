@@ -43,7 +43,6 @@ import org.json.simple.parser.ParseException;
  * @author Winners
  */
 public class PDF {
-    
 
     PDDocument document;                // root PDF document object
     //List<Question> questions;           // represents the PDF questions
@@ -289,10 +288,16 @@ public class PDF {
         System.out.println("LLX: " + xLLBoundary + ", URX: " + xURBoundary + 
                 ", LLY: " + yLLBoundary + ", URY: " + yURBoundary);
         
+        PDFTextStripper stripMe = new PDFTextStripper();
+         System.out.println(stripMe.getText(document));
+        
         // strip the text from document and load each character into a list
         TextStripper stripper = new TextStripper();
         stripper.processLocation(document);
         List<TextPosition> characters = stripper.getCharacters();
+        
+        
+       
         
         float pIndex = 800; // the top index of each page
         PDFont font; // font for each character
@@ -343,25 +348,18 @@ public class PDF {
             xAxis = textPos.getXDirAdj();   // get current x-axis position
             yAxis = textPos.getYDirAdj();   // get current y-axis position
             //lineHeight = font.getFontHeight(eM, 0, 1); // get line height
-            lineHeight = 11;
+            lineHeight = 10;
             
-            // Logic for starting a new page 
-            if (/*yAxis > (800 - yLLBoundary) || */(lastY - yAxis) > 1) {
-                content.endText();
-                content.close();
-                doc.addPage(page);
-                System.out.println("UPPER LastY: " + lastY + ", yAxis: " + yAxis + ", y-Boundary: " + yLLBoundary);
-                page = new PDPage();
-                content = new PDPageContentStream(doc, page);
-                lastY = 0;
-                content.beginText();
-            }
+
                        
             // Answers replacement algorithm
             if (textCharacter.equals("@") && textPos1 != null && textPos1.getCharacter().equals("@")) {
                 textPos = it.next(); // move to second "@"
                 textCharacter = textPos.getCharacter();
                 String hashCharacters = "";
+                
+                if (it1.hasNext())
+                    textPos1 = it1.next();
                 
                 // Get the entire hash and load it into a string
                 while (it.hasNext()) {
@@ -435,7 +433,7 @@ public class PDF {
                     
                     xOffset = (xAxisHash - xAxis);
                     yOffset = (yAxisHash - yAxis);  
-                    
+                    lastY = yAxisHash;
                     xAxis = textPos.getXDirAdj();   // get current x-axis position
                     yAxis = textPos.getYDirAdj();   // get current y-axis position
                     
@@ -444,29 +442,57 @@ public class PDF {
                         yOffset = 0;
                     } else if (Math.abs(xAxis - xLLBoundary) < 5) { // if x is near the llboundary
                         xOffset = 0;
+                        System.out.println("HAR ");
+                    } else {
+                        xOffset = 0;
                     }
+                    
+                    
                 }
             }
 
                         
             // reset xOffset when a newline is reached
-            if (textCharacter.equals("\n"))
+            if (textCharacter.equals("\n")) {
                 xOffset = 0;
+                System.out.println("Newline Found!");
+            }
             
             xAxis += (xOffset);
-
+            
+            if ((yAxis -= (yOffset)) < yLLBoundary)
+                yAxis += 800;
             
             // if offset requires a new line 
             if (xAxis > xURBoundary) { 
                 System.out.println("Bound: " + xAxis + " " + xURBoundary);
-                xAxis = xLLBoundary;
+                xAxis -= xURBoundary;
+//                xAxis = xLLBoundary;
                 xOffset = 0;
-                yAxis += lineHeight;
+                System.out.println("X > URBoundary");
+                
+                
+            }
+            if (xAxis < xLLBoundary) { 
+                System.out.println("Bound: " + xAxis + " " + xURBoundary);
+                xAxis += xURBoundary;
                 System.out.println("X > URBoundary");
             }
           
-            if ((yAxis -= (yOffset)) < yLLBoundary)
-                yAxis += 800;
+
+            
+            // Logic for starting a new page 
+            if (/*yAxis > (800 - yLLBoundary) || */(lastY - yAxis) > 1) {
+                content.endText();
+                content.close();
+                doc.addPage(page);
+                System.out.println("UPPER LastY: " + lastY + ", yAxis: " + yAxis + ", y-Boundary: " + yLLBoundary);
+                page = new PDPage();
+                content = new PDPageContentStream(doc, page);
+                lastY = 0;
+                content.beginText();
+            }
+            
             
             content.setFont( font, fontSize ); // set font (mandatory)
             content.moveTextPositionByAmount(0, 0); // Reset the reference point
@@ -488,7 +514,7 @@ public class PDF {
         save(doc, savePath); // save doc
         doc.close(); // close doc
     }
-    
+     
     
     private void writeCharacter(PDPageContentStream content, String character , PDFont font, float fontSize, float xAxis, float yAxis ) throws IOException {
             content.setFont( font, fontSize ); // set font (mandatory)
