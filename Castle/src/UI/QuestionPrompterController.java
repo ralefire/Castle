@@ -85,6 +85,9 @@ public class QuestionPrompterController implements Initializable, ControlledScre
 
     /**
      * Initializes the controller class.
+     * 
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -218,17 +221,21 @@ public class QuestionPrompterController implements Initializable, ControlledScre
         if (typeButtons.getSelectedToggle() != null) {
             String currentType = question.getType();
             String nextType = typeButtons.getSelectedToggle().getUserData().toString();
-            if (nextType.equals("TextArea") || nextType.equals("TextField")) {
-                question.setType(nextType);
-            } else if (nextType.equals("Radio") || nextType.equals("CheckBox")) {
-                List<String> newPosAnswers = new ArrayList<>();
-                for (TextField fieldToSave : posAnswerList) {
-                    if (!fieldToSave.getText().equals("")) {
-                        newPosAnswers.add(fieldToSave.getText());
-                    }
-                }
-                question.setType(nextType);
-                question.setPosAnswers(newPosAnswers);
+            switch (nextType) {
+                case "TextArea":
+                case "TextField":
+                    question.setType(nextType);
+                    break;
+                case "Radio":
+                case "CheckBox":
+                    List<String> newPosAnswers = new ArrayList<>();
+                    for (TextField fieldToSave : posAnswerList) {
+                        if (!fieldToSave.getText().equals("")) {
+                            newPosAnswers.add(fieldToSave.getText().trim());
+                        }
+                    }   question.setType(nextType);
+                    question.setPosAnswers(newPosAnswers);
+                    break;
             }
         }
     }
@@ -248,9 +255,9 @@ public class QuestionPrompterController implements Initializable, ControlledScre
 
     public void fillPosAnswers(List<String> posAnswers) {
         int index = 0;
-        for (String posAnswer : posAnswers) {
+        for (String currentAnswer : posAnswers) {
             TextField fieldToEdit = posAnswerList.get(index++);
-            fieldToEdit.setText(posAnswer);
+            fieldToEdit.setText(currentAnswer);
         }
     }
 
@@ -271,23 +278,27 @@ public class QuestionPrompterController implements Initializable, ControlledScre
     private void setRadioButtons(Question question) {
         String type = question.getType();
         
-        if (type.equals("Radio") || type.equals("CheckBox")) {
-            if (!question.getPosAnswers().isEmpty()) {
-                numberPosAnswerList.setValue(Integer.toString(question.getPosAnswers().size()));
-            } else {
-                numberPosAnswerList.setValue(null);
-            }
-            if (type.equals("Radio")) {
-                typeButtons.selectToggle(radioButton);
-            } else {
-                typeButtons.selectToggle(checkBoxButton);
-            }
-        } else if (type.equals("TextArea")) {
-            typeButtons.selectToggle(textAreaButton);
-        } else if (type.equals("TextField")) {
-            typeButtons.selectToggle(textFieldButton);
-        } else {
-            typeButtons.selectToggle(null);
+        switch (type) {
+            case "Radio":
+            case "CheckBox":
+                if (!question.getPosAnswers().isEmpty()) {
+                    numberPosAnswerList.setValue(Integer.toString(question.getPosAnswers().size()));
+                } else {
+                    numberPosAnswerList.setValue(null);
+                }   if (type.equals("Radio")) {
+                    typeButtons.selectToggle(radioButton);
+                } else {
+                    typeButtons.selectToggle(checkBoxButton);
+            }   break;
+            case "TextArea":
+                typeButtons.selectToggle(textAreaButton);
+                break;
+            case "TextField":
+                typeButtons.selectToggle(textFieldButton);
+                break;
+            default:
+                typeButtons.selectToggle(null);
+                break;
         }
     }
     
@@ -310,7 +321,7 @@ public class QuestionPrompterController implements Initializable, ControlledScre
                 isFinished = false;
             }
             if (curQuestion.getType().equals("Radio") || curQuestion.getType().equals("CheckBox")) {
-                if (curQuestion.getPosAnswers().size() == 0) {
+                if (curQuestion.getPosAnswers().isEmpty()) {
                     System.out.println("Question with hash: "
                             +     curQuestion.getHash() + 
                                     " is missing possible answers!");

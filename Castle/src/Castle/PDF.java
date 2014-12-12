@@ -49,7 +49,6 @@ public class PDF {
     private Boolean isLoaded;           // true if pdf document is loaded, false otherwise
     private Map<Question, String> answersMap;   // maps questions to answers
     private String textContent;         // represents the full PDF text content
-    private List<String> posAnswers;
     private boolean questionsLoaded;
 
     /**
@@ -58,7 +57,6 @@ public class PDF {
     public PDF() {
        // this.answers = new HashMap<>();
         this.isLoaded = false;
-        this.posAnswers = new ArrayList();
         this.answersMap = new HashMap();
         this.questionsLoaded = false;
     }
@@ -72,10 +70,10 @@ public class PDF {
         answersMap.put(new Question("", "Damage", ""), emptyList);
         answersMap.put(new Question("", "House Size", ""), emptyList);
         answersMap.put(new Question("", "Check Box", ""), emptyList);
-        answersMap.put(new Question("What is your number?", "Number", "TextField"), emptyList);
-        answersMap.put(new Question("Describe the flowing locks", "Hair", "TextArea"), emptyList);
-        answersMap.put(new Question("What is your couch size?", "Couch Size", "Radio"), emptyList);
-        answersMap.put(new Question("Which other ones do you want?", "More Boxes", "CheckBox"), emptyList);
+        //answersMap.put(new Question("What is your number?", "Number", "TextField"), emptyList);
+        //answersMap.put(new Question("Describe the flowing locks", "Hair", "TextArea"), emptyList);
+        //answersMap.put(new Question("What is your couch size?", "Couch Size", "Radio"), emptyList);
+        //answersMap.put(new Question("Which other ones do you want?", "More Boxes", "CheckBox"), emptyList);
     }
     
     /**

@@ -101,14 +101,14 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
      * @param question 
      */
     public void formatTextArea(Question question) {
-        List<String> answer = prompter.getAnswers().get(question);
+        String answer = prompter.getAnswers().get(question);
         answerPane.getChildren().clear();
         textAreaAnswer.setMinSize(300, 200);
         textAreaAnswer.setLayoutX(13);
         textAreaAnswer.setLayoutY(38);
         textAreaAnswer.setMaxSize(374, 218);
         if (!answer.isEmpty()) {
-            textAreaAnswer.setText(answer.get(0));
+            textAreaAnswer.setText(answer);
         } else { 
             textAreaAnswer.clear();
         }
@@ -120,13 +120,13 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
      * @param question
      */
     public void formatRadioButton(Question question) {
-        List<String> listAnswer = prompter.getAnswers().get(question);
+        String listAnswer = prompter.getAnswers().get(question);
         String currentAnswer = "";
         buttonBox.setLayoutX(150);
         buttonBox.setLayoutY(66);
         answerPane.getChildren().clear();
         if (!listAnswer.isEmpty()) {
-            currentAnswer = listAnswer.get(0);
+            currentAnswer = listAnswer;
         } 
         
         buttonBox.getChildren().clear();
@@ -156,8 +156,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         
         
         List<String> possibleAnswers = question.getPosAnswers();
-        List<String> selectedAnswers = prompter.getAnswers().get(question);
-        
+        String selectedAnswers = prompter.getAnswers().get(question);
         checkboxArray.clear();
         for (String answer : possibleAnswers) {
             
@@ -180,12 +179,12 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
      * @param question
      */
     public void formatTextField(Question question) {
-        List<String> answer = prompter.getAnswers().get(question);
+        String answer = prompter.getAnswers().get(question);
         textFieldAnswer.setLayoutX(116);
         textFieldAnswer.setLayoutY(116);
         answerPane.getChildren().clear();
         if (!answer.isEmpty()) {
-            textFieldAnswer.setText(answer.get(0));
+            textFieldAnswer.setText(answer);
         }
         else {
             textFieldAnswer.clear();
@@ -235,9 +234,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     }
 
     private void saveTextAnswer(String answer, Question question) {
-        List<String> answerList = new ArrayList<>(); 
-        answerList.add(answer);
-        prompter.addAnswer(question, answerList);
+        prompter.addAnswer(question, answer);
     }
 
     public void getRadioAnswer(Question question) {
@@ -245,23 +242,51 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         if (radioButtons.getSelectedToggle() != null) {
             answer = radioButtons.getSelectedToggle().getUserData().toString();
         } else {
-            answer = null;
+            answer = "";
         }
-        List<String> answerList = new ArrayList<>();
-        answerList.add(answer);
-        prompter.addAnswer(question, answerList);
+        prompter.addAnswer(question, answer);
     }
     
     public void getCheckBoxAnswer(Question question) {
         String answer;
-        List<String> answerList = new ArrayList();
-        for (CheckBox checkbox : checkboxArray) {
+        String answerString = "";
+        int numAnswers = 0;
+        for (CheckBox checkbox : checkboxArray)  {
             if (checkbox.isSelected()) {
-                answer = checkbox.getText();
-                answerList.add(answer);
+                numAnswers++;
             }
         }
-        prompter.addAnswer(question, answerList);
+        int currentNumAnswers = 1;
+        for (CheckBox checkbox : checkboxArray) {
+            if (checkbox.isSelected()) {
+                if (numAnswers == 1) {
+                    answerString += checkbox.getText();
+                } else if (numAnswers == 2) {
+                    if (currentNumAnswers == 1) {
+                        answerString += checkbox.getText();
+                        answerString += " and ";
+                        currentNumAnswers++;
+                    } else {
+                        answerString += checkbox.getText();
+                    }
+                } else {
+                    if (currentNumAnswers + 1 == numAnswers) {
+                        answerString += checkbox.getText();
+                        answerString += " and ";
+                        currentNumAnswers++;
+                    } else if (currentNumAnswers == numAnswers) {
+                        answerString += checkbox.getText();
+                        currentNumAnswers++;
+                    } else {
+                        answerString += checkbox.getText();
+                        answerString += ", ";
+                        currentNumAnswers++;
+                    }
+                }
+            }
+        }
+        prompter.addAnswer(question, answerString);
+        
         
     }
     
