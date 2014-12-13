@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package testpdfaction;
+package Castle;
 
 import org.apache.pdfbox.util.PDFTextStripper;
 import java.io.IOException;
