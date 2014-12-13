@@ -198,6 +198,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
      */
     @FXML
     public void goBack() {
+        save(questionListView.getSelectionModel().getSelectedItem());
         myController.setScreen(MainUI.mainPage);
     }
     

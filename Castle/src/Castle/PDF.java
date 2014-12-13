@@ -69,15 +69,15 @@ public class PDF {
      * 
      */
     public void loadQuestions() {
-        String emptyList = "";
-        answersMap.put(new Question("how old", "Age", "TextField"), emptyList);
-        answersMap.put(new Question("describe it", "Damage", "TextArea"), emptyList);
-        answersMap.put(new Question("how big", "House Size", "Radio"), emptyList);
-        answersMap.put(new Question("check boxes", "Check Box", "CheckBox"), emptyList);
-        //answersMap.put(new Question("What is your number?", "Number", "TextField"), emptyList);
-        answersMap.put(new Question("Describe the flowing locks", "Hair", "TextArea"), emptyList);
-        answersMap.put(new Question("What is your couch size?", "Couch Size", "Radio"), emptyList);
-        answersMap.put(new Question("Which other ones do you want?", "More Boxes", "CheckBox"), emptyList);
+//        String emptyList = "";
+//        answersMap.put(new Question("how old", "Age", "TextField"), emptyList);
+//        answersMap.put(new Question("describe it", "Damage", "TextArea"), emptyList);
+//        answersMap.put(new Question("how big", "House Size", "Radio"), emptyList);
+//        answersMap.put(new Question("check boxes", "Check Box", "CheckBox"), emptyList);
+//        //answersMap.put(new Question("What is your number?", "Number", "TextField"), emptyList);
+//        answersMap.put(new Question("Describe the flowing locks", "Hair", "TextArea"), emptyList);
+//        answersMap.put(new Question("What is your couch size?", "Couch Size", "Radio"), emptyList);
+//        answersMap.put(new Question("Which other ones do you want?", "More Boxes", "CheckBox"), emptyList);
     }
     
     /**
@@ -183,7 +183,7 @@ public class PDF {
             PDFTextStripper stripMe = new PDFTextStripper();
             String content = stripMe.getText(document);
 
-            Pattern hashPattern = Pattern.compile("@@\\w+@@");
+            Pattern hashPattern = Pattern.compile("@@\\w+(\\s\\w+)?@@");
             Matcher hashMatcher = hashPattern.matcher(content);
 
             while (hashMatcher.find()) {
@@ -432,7 +432,10 @@ public class PDF {
     public void addResponses() throws IOException, ParseException {
         for (Question tempQuestion : answersMap.keySet()) {
             String answer = answersMap.get(tempQuestion);
-            textContent = textContent.replaceAll(tempQuestion.getHash(), answer); // REGEX, Replacement
+            String hash = "@@" + tempQuestion.getHash() + "@@";
+            
+            textContent = textContent.replaceAll(hash, answer); // REGEX, Replacement
+            //System.out.println("Answer: " + answer + " question hash: " + tempQuestion.getHash());
         }
        // System.out.println(textContent);
     }
