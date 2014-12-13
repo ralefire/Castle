@@ -250,6 +250,7 @@ public class PDF {
         PDFont font;
             switch(fontName) {
                 case "org.apache.pdfbox.pdmodel.font.PDType0Font@7a46a697":
+                case "org.apache.pdfbox.pdmodel.font.PDType0Font@3abfe836":
                     font = PDType1Font.TIMES_ITALIC;
                     if (fontSize > 18)
                         font = PDType1Font.TIMES_BOLD;
@@ -265,8 +266,8 @@ public class PDF {
      * @param savePath
      * @throws java.io.IOException
      */
-    public void buildPDF(String savePath) throws IOException, Exception {
-        PDDocument doc = new PDDocument();  // new document to be saved
+    public void buildPDF(String filePath) throws IOException, Exception {
+       PDDocument doc = new PDDocument();  // new document to be saved
         PDPage page = new PDPage(); // start a new page
         doc.setDocumentInformation(document.getDocumentInformation()); // set the metadata to document meta data
         Map<String, Question> hashQuestionMap = getHashQuestionMap();
@@ -277,251 +278,130 @@ public class PDF {
         for (PDPage p : allPages) {
             pageRecs.add(p.getArtBox());
         }
-        PDRectangle pageRec = pageRecs.get(0);
-        float xLLBoundary = pageRec.getLowerLeftX();
-        float yLLBoundary = pageRec.getLowerLeftY();
-        float xURBoundary = pageRec.getUpperRightX();
-        float yURBoundary = pageRec.getUpperRightY();
         
-        System.out.println("LLX: " + xLLBoundary + ", URX: " + xURBoundary + 
-                ", LLY: " + yLLBoundary + ", URY: " + yURBoundary);
-        
-        PDFTextStripper stripMe = new PDFTextStripper();
-         System.out.println(stripMe.getText(document));
-        
-        // strip the text from document and load each character into a list
+                // strip the text from document and load each character into a list
         TextStripper stripper = new TextStripper();
         stripper.processLocation(document);
         List<TextPosition> characters = stripper.getCharacters();
+        List<Object> indents = stripper.getIndents();
+        List<Object> lineSpaces = stripper.getLineSpaces();
+        textContent = stripper.getContent();
         
-        
-       
-        
-        float pIndex = 800; // the top index of each page
+        PDRectangle pageRec = pageRecs.get(0);
+        float xLLBoundary = stripper.getMinXWidth();
+        float yLLBoundary = stripper.getMinYHeight();
+        float xURBoundary = stripper.getMaxXWidth();
+        float yURBoundary = stripper.getMaxYHeight();
+        yURBoundary = 710;
+        yLLBoundary = 100;
+                
         PDFont font; // font for each character
         float fontSize; // font size
         PDPageContentStream content = new PDPageContentStream(doc, page); // content stream for writing characters
-        float xAxis = 0;    // stores the x-axis position of the character
-        float yAxis = 0;    // stores the y-axis position of the character
-        float lastX = 0;    // stores the previous x-axis position
-        float lastY = 0;    // stores the previous y-axis position
-        float yOffset = 0;
-        float xOffset = 0;
+        float xAxis = xLLBoundary;    // stores the x-axis position of the character
+        float yAxis = yURBoundary;    // stores the y-axis position of the character
         String textCharacter = "";
         String fontName = "";
         byte[] eM = {(byte)'M'};
-        float lineHeight = 0.0f; 
-        Boolean shiftY = false; // true if y reflow needed
-        Boolean shiftX = false; // true if x reflow needed
-        Boolean newPage = false;
-        float prevXAxisHash = 0.0f;
-        float prevYAxisHash = 0.0f;        
+        float lineHeight = 0.0f;      
+       
+        // Set current and next textPosition objects from character list
+
+        //lineHeight = font.getFontHeight(eM, 0, 1); // get line height
+        lineHeight = 15;
         
-        // character list iterators
-        Iterator<TextPosition> it = characters.iterator();  // iterate through the character list
-        // iterate through the next value of the character list (used for Hash detection)
-        Iterator<TextPosition> it1 = characters.iterator(); 
-        if (it1.hasNext())
-            it1.next();
+        addResponses();
         
-        content.beginText(); // begin writing a character
-        // loop through each character of the character list
-        while (it.hasNext()) {
+        String lines[] = textContent.split("\\n");
+//            indents.add(0, 0.0f);
+//            characters.add(0,characters.get(0));
+//            lineSpaces.remove(0);
             
-            // Set current and next textPosition objects from character list
-            TextPosition textPos = it.next(); // textPos representing current position
-            TextPosition textPos1;            // textPos representing next position
-            if (it1.hasNext()) {
-                textPos1 = it1.next();
-            } else {
-                textPos1 = null;
-            }
+           
+            int index = 0;
+            String extra = "";
+
+       // for (String line : lines) {
+         for (int j = 1; j < lines.length; j++) {   
+            String line = lines[j];
+            System.out.println("line: " + line + ", lines size " + lines.length + ", indents: " + indents.size() + ", characters s: " + characters.size());
             
-            textCharacter = textPos.getCharacter(); // get text character to be written
+            TextPosition textPos = characters.get(index);
             font = textPos.getFont(); // font
             fontSize = textPos.getFontSize(); // font size
             fontName = font.toString(); // font name
             font = getFontFromName(fontName, fontSize); // set default font and font mapping
-            lastY = yAxis;  // set previous y-axis value
-            xAxis = textPos.getXDirAdj();   // get current x-axis position
-            yAxis = textPos.getYDirAdj();   // get current y-axis position
-            //lineHeight = font.getFontHeight(eM, 0, 1); // get line height
-            lineHeight = 10;
             
-
-                       
-            // Answers replacement algorithm
-            if (textCharacter.equals("@") && textPos1 != null && textPos1.getCharacter().equals("@")) {
-                textPos = it.next(); // move to second "@"
-                textCharacter = textPos.getCharacter();
-                String hashCharacters = "";
-                
-                if (it1.hasNext())
-                    textPos1 = it1.next();
-                
-                // Get the entire hash and load it into a string
-                while (it.hasNext()) {
-                    textPos = it.next();
-                    textCharacter = textPos.getCharacter();
-                    if (it1.hasNext())
-                        textPos1 = it1.next();
-                    
-                    if (textCharacter.equals("@") && textPos1 != null && textPos1.getCharacter().equals("@")) {
-                        while (it.hasNext() && textCharacter.equals("@") ) {
-                            textPos = it.next();
-                            textCharacter = textPos.getCharacter();
-                            if (it1.hasNext())
-                               textPos1 = it1.next();
-                        }
-                        break;
-                    }
-                    hashCharacters += textPos; // entire hash gets loaded here
-                }
-                
-                // check if the hash is valid
-                if (hashQuestionMap.containsKey(hashCharacters)) {                   
-                    float xAxisHash = xAxis;    // xAxis position of hash answer character
-                    float yAxisHash = yAxis;    // y-axis position of hash answer character
-                    hashCharacters = answersMap.get(hashQuestionMap.get(hashCharacters)); // get the answer from the hash value                 
-                    
-                    // loop to replace the hash with an answer
-                    for (int i = 0; i < hashCharacters.length(); i++) {
-                        String answerCharacter = "" + hashCharacters.charAt(i); // load answer character from hash answers
-                        // get font width
-                        float fWidth = 11;
-//                        font.getFontWidth(hashCharacters.charAt(i)); // get font width of answer character
-//                        PDRectangle fontDim = font.getFontBoundingBox();
-//                        fWidth = fontDim.getWidth();
-//                        fWidth = (fWidth / 1000) * fontSize;
-//                        fWidth = 11;
-//                        System.out.println("Font Width: " + fWidth);
-                            
-                        xAxisHash += fWidth; // adjust x-axis position based on font width
-                        
-                        // if new line is needed
-                        if (xAxisHash >= xURBoundary) {
-                            System.out.println("X > Boundary");
-                            xAxisHash = xLLBoundary; // move X position to lower left boundary
-                            yAxisHash += lineHeight; // move Y position down 1 line
-                        }
-
-                        // if new page is needed
-                        if (yAxisHash < yLLBoundary) {
-                            content.endText();
-                            content.close();
-                            doc.addPage(page);
-                            System.out.println("LastY: " + lastY + ", yAxis: " + yAxisHash + ", y-Boundary: " + yLLBoundary);
-                            page = new PDPage();
-                            content = new PDPageContentStream(doc, page);
-                            // pIndex = 800;
-                            yAxisHash = yURBoundary;
-                            xAxisHash = xLLBoundary;
-                            content.beginText();
-                            newPage = true;
-                        }
-                        
-                        writeCharacter(content, answerCharacter , font, fontSize, xAxisHash, yAxisHash );
-                        
-                        // restart writing for each line
-                        if (xAxisHash >= 90) {
-                            content.endText();
-                            content.beginText();
-                        }
-                    } // END answers replacement loop
-                    
-                    xOffset = (xAxisHash - xAxis);
-                    yOffset = (yAxisHash - yAxis);  
-                    lastY = yAxisHash;
-                    xAxis = textPos.getXDirAdj();   // get current x-axis position
-                    yAxis = textPos.getYDirAdj();   // get current y-axis position
-                    
-                    
-                    if (Math.abs(yAxis - yAxisHash ) <= 1) { //if y didn't change
-                        yOffset = 0;
-                    } else if (Math.abs(xAxis - xLLBoundary) < 5) { // if x is near the llboundary
-                        xOffset = 0;
-                        System.out.println("HAR ");
-                    } else {
-                        xOffset = 0;
-                    }
-                    
-                    
-                }
-            }
-
-                        
-            // reset xOffset when a newline is reached
-            if (textCharacter.equals("\n")) {
-                xOffset = 0;
-                System.out.println("Newline Found!");
+            System.out.println("FONT: " + fontName + " " + textPos.getCharacter());
+            xAxis = (float)indents.get(index);
+            
+            // reflow logic
+            int width = (line.length());
+            int xLimit = (int)((xURBoundary - xAxis) / textPos.getWidth());
+            xLimit = 85;
+            
+            extra += line;
+            line = extra;
+            
+            
+            if (width > (int)xLimit) {
+               System.out.println("Width: " + width + " URX: " + xLimit);
+                width = (line.length() - (int)(xLimit));
+                extra = line.substring(xLimit); // get the substring
+                line = line.substring(0, xLimit); // 
+                System.out.println("cut part: " + extra); 
+                System.out.println("line after:" + line);
+                indents.add(index + 1, xAxis); // add extra indent to array
+                characters.add(index + 1, textPos);
+                lineSpaces.add(index + 1, lineHeight);
+            } else {
+                extra = "";
             }
             
-            xAxis += (xOffset);
-            
-            if ((yAxis -= (yOffset)) < yLLBoundary)
-                yAxis += 800;
-            
-            // if offset requires a new line 
-            if (xAxis > xURBoundary) { 
-                System.out.println("Bound: " + xAxis + " " + xURBoundary);
-                xAxis -= xURBoundary;
-//                xAxis = xLLBoundary;
-                xOffset = 0;
-                System.out.println("X > URBoundary");
-                
-                
-            }
-            if (xAxis < xLLBoundary) { 
-                System.out.println("Bound: " + xAxis + " " + xURBoundary);
-                xAxis += xURBoundary;
-                System.out.println("X > URBoundary");
-            }
-          
-
-            
+            index++;
+//            yAxis -= lineHeight;
             // Logic for starting a new page 
-            if (/*yAxis > (800 - yLLBoundary) || */(lastY - yAxis) > 1) {
-                content.endText();
+            if ( yAxis < yLLBoundary) {
                 content.close();
                 doc.addPage(page);
-                System.out.println("UPPER LastY: " + lastY + ", yAxis: " + yAxis + ", y-Boundary: " + yLLBoundary);
                 page = new PDPage();
                 content = new PDPageContentStream(doc, page);
-                lastY = 0;
-                content.beginText();
-            }
-            
-            
-            content.setFont( font, fontSize ); // set font (mandatory)
-            content.moveTextPositionByAmount(0, 0); // Reset the reference point
-            content.moveTextPositionByAmount( xAxis, pIndex - yAxis ); // set text position (mandatory)
-            content.drawString(textCharacter); // draw a character
-
-
-            
-            // restart writing for each line
-            if (xAxis >= 90) {
-                content.endText();
-                content.beginText();
-            }
+                yAxis = yURBoundary;
+            } 
+            content.beginText();
+            writeCharacter(content, line, font, fontSize, xAxis, yAxis -= lineHeight);
+            content.endText();
             
         }
-        content.endText(); // end remaining text
+
         content.close(); // close content stream
         doc.addPage(page); // add remaining page
-        save(doc, savePath); // save doc
+        save(doc, filePath); // save doc
         doc.close(); // close doc
     }
      
     
     private void writeCharacter(PDPageContentStream content, String character , PDFont font, float fontSize, float xAxis, float yAxis ) throws IOException {
             content.setFont( font, fontSize ); // set font (mandatory)
-                // System.out.println("X: " + xAxis + ", Y: " + yAxis);
-            content.moveTextPositionByAmount(0, 0); // Reset the reference point
-            content.moveTextPositionByAmount( xAxis, 800 - yAxis ); // set text position (mandatory)
+            content.moveTextPositionByAmount( xAxis, yAxis ); // set text position (mandatory)
             content.drawString(character); // draw a character    
-            System.out.println("CHAR: " + character);
     }
+    
+    /**
+     * Strips the text from the PDDocument then inserts the answers from
+     * answersMap into the corresponding question Hash and loads the result
+     * into textContent
+     * @throws IOException
+     * @throws ParseException 
+     */
+    public void addResponses() throws IOException, ParseException {
+        for (Question tempQuestion : answersMap.keySet()) {
+            String answer = answersMap.get(tempQuestion);
+            textContent = textContent.replaceAll(tempQuestion.getHash(), answer); // REGEX, Replacement
+        }
+       // System.out.println(textContent);
+    }
+    
   
     /**
      * This function copies all of the text from the PDF and returns it
