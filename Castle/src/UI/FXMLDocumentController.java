@@ -6,6 +6,7 @@
 package UI;
 
 import Castle.PDF;
+import Castle.Question;
 import Castle.QuestionPrompter;
 import java.io.File;
 import java.net.URL;
@@ -19,6 +20,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -68,36 +71,31 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     
     @FXML
     private void savePress(){
-        
-        if (filename == "") {
-            FileChooser chooser = new FileChooser();
-            File file = chooser.showSaveDialog(new Stage());
-             if(file == null) {
-                showWarning("No file selected or created");
-                filename = "";
-            } else {
-             
-            try {
-                if (!file.exists()) {
-                    file.createNewFile();
-                    }
+        JSONArray jsonArray = new JSONArray();
+        for (Question question : pdf.getQuestionMap().keySet()) {
+            JSONObject json = new JSONObject();
+            json.put("prompt", question.getPrompt());
+            json.put("hash", question.getHash());
+            json.put("type", question.getType());
+            if (question.getType().equals("CheckBox") ||
+                question.getType().equals("Radio")) {
+                String completePosAnswer = "";
+                for (String posAnswer : question.getPosAnswers()) {
+                    completePosAnswer += posAnswer + " !@ ";
                 }
-                catch (Exception e) {
-                    ;
-                }
+                json.put("posAnswer", completePosAnswer);
 
-            filename = file.getPath();
             }
+            jsonArray.add(json);
         }
-        try {
-            pdf.save(filename);
-        } catch (Exception e) {
-            System.out.println("Save press pdf.save() error");
-        }
+        pdf.setKeywords(jsonArray);
+        
+        showWarning("Questions saved to PDF");
     }
+
     
     @FXML
-    private void saveAsPress(){
+    private void exportPDFPress(){
         FileChooser chooser = new FileChooser();
         File file = chooser.showSaveDialog(new Stage());
         
@@ -117,19 +115,45 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
             try {
                 pdf.save(filename);
             } catch (Exception e) {
-                System.out.println("Save As press pdf.save() error");
+                System.out.println("Export PDF FAIL");
             }
         }
     }
     
     @FXML
     private void editPress(){
+        myController.loadScreen(MainUI.builderPage, MainUI.builderFXML);
+        myController.setScreen(MainUI.builderPage);
     }
     
     
     @FXML
     private void loadPress() {
-        System.out.println("Loading...");
+//        System.out.println("Loading...");
+//        FileChooser chooser = new FileChooser();
+//        File file = chooser.showOpenDialog(new Stage());
+//        if (file == null) {
+//            showWarning("No file selected or created");
+//            filename = "";
+//            return;
+//        } else {
+//
+//            try {
+//                if (!file.exists()) {
+//                    file.createNewFile();
+//                }
+//            } catch (Exception e) {
+//                ;
+//            }
+//
+//            filename = file.getPath();
+//        }
+//
+//        try {
+//        pdf.load(filename);
+//        } catch (Exception e) {
+//            ;
+//        }
         pdf.loadQuestions();
         startButton.setDisable(false);
         saveButton.setDisable(false);

@@ -23,6 +23,8 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.util.PDFTextStripper;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
@@ -48,6 +50,7 @@ public class PDF {
     //List<Question> questions;           // represents the PDF questions
     private Boolean isLoaded;           // true if pdf document is loaded, false otherwise
     private Map<Question, String> answersMap;   // maps questions to answers
+    private Map<String, Question> hashQuestionMap;
     private String textContent;         // represents the full PDF text content
     private boolean questionsLoaded;
 
@@ -58,6 +61,7 @@ public class PDF {
        // this.answers = new HashMap<>();
         this.isLoaded = false;
         this.answersMap = new HashMap();
+        this.hashQuestionMap = new HashMap();
         this.questionsLoaded = false;
     }
     
@@ -66,14 +70,14 @@ public class PDF {
      */
     public void loadQuestions() {
         String emptyList = "";
-        answersMap.put(new Question("", "Age", ""), emptyList);
-        answersMap.put(new Question("", "Damage", ""), emptyList);
-        answersMap.put(new Question("", "House Size", ""), emptyList);
-        answersMap.put(new Question("", "Check Box", ""), emptyList);
+        answersMap.put(new Question("how old", "Age", "TextField"), emptyList);
+        answersMap.put(new Question("describe it", "Damage", "TextArea"), emptyList);
+        answersMap.put(new Question("how big", "House Size", "Radio"), emptyList);
+        answersMap.put(new Question("check boxes", "Check Box", "CheckBox"), emptyList);
         //answersMap.put(new Question("What is your number?", "Number", "TextField"), emptyList);
-        //answersMap.put(new Question("Describe the flowing locks", "Hair", "TextArea"), emptyList);
-        //answersMap.put(new Question("What is your couch size?", "Couch Size", "Radio"), emptyList);
-        //answersMap.put(new Question("Which other ones do you want?", "More Boxes", "CheckBox"), emptyList);
+        answersMap.put(new Question("Describe the flowing locks", "Hair", "TextArea"), emptyList);
+        answersMap.put(new Question("What is your couch size?", "Couch Size", "Radio"), emptyList);
+        answersMap.put(new Question("Which other ones do you want?", "More Boxes", "CheckBox"), emptyList);
     }
     
     /**
@@ -81,6 +85,22 @@ public class PDF {
      * @return 
      */
     public boolean getQuestionsLoaded() {
+        for (Question currentQuestion : answersMap.keySet()) {
+            if (currentQuestion.getPrompt().equals("") || 
+                currentQuestion.getHash().equals("") ||
+                currentQuestion.getType().equals("")) {
+                setQuestionsLoaded(false);
+                break;
+            } else if (currentQuestion.getType().equals("Radio") ||
+                       currentQuestion.getType().equals("CheckBox")) {
+                if (currentQuestion.getPosAnswers().isEmpty()) {
+                    setQuestionsLoaded(false);
+                }
+            } else {
+                setQuestionsLoaded(true);
+            }
+        }
+
         return questionsLoaded;
     }
     
@@ -131,39 +151,54 @@ public class PDF {
                 
                 JSONObject keysJSON = jsonKeysIterator.next();
                 
+                Question newQuestion = new Question("", "", "");
+                List<String> posAnswerList = new ArrayList<>();
+                
                 keysJSON.keySet().stream().forEach((key) -> {
                     Object value = keysJSON.get(key);
-                    String prompt = "";
-                    String hash = "";
-                    String type = "";
+                    System.out.println(value);
                     
-                   // System.out.println(value);
-
                     if (key.equals("prompt")) {
-                        prompt = (String)value;
+                        newQuestion.setPrompt((String) value);
+                    } else if (key.equals("hash")) {
+                        newQuestion.setHash((String) value);
+                    } else if (key.equals("type")) {
+                        newQuestion.setType((String) value);
+                    } else if (key.equals("posAnswer")) {
+                        String newValue = ((String)value);
+                        String answers[] = newValue.split("!@");
+                        for (int i = 0; i < answers.length; i++) {
+                            answers[i] = answers[i].trim();
+                            if (!answers[i].isEmpty()) {
+                                posAnswerList.add(answers[i]);
+                            }
+                        }
                     }
-                    else if (key.equals("hash")) {
-                        hash = (String)value;
-                    }
-                     else if (key.equals("type"))
-                    {
-                        type = (String)value;
-                    }                    
-                    Question newQuestion;
-                    if (type.equals("TextField")) {
-                        newQuestion = new Question(prompt, hash, type); // String prompt, String hash, String type
-                        System.out.println(keysJSON);
-                    } else if (type.equals("RadioQuestion")) {
-                        newQuestion = new Question(prompt, hash, type); // String prompt, String hash, String type
-                        System.out.println(keysJSON);
-                    } else if (type.equals("TextArea")) {
-                        newQuestion = new Question(prompt, hash, type); // String prompt, String hash, String type
-                        System.out.println(keysJSON);
-                    }
-                    
                 });
+                newQuestion.setPosAnswers(posAnswerList);
+                answersMap.put(newQuestion, "");
             }
+        } else {
+
+            PDFTextStripper stripMe = new PDFTextStripper();
+            String content = stripMe.getText(document);
+
+            Pattern hashPattern = Pattern.compile("@@\\w+@@");
+            Matcher hashMatcher = hashPattern.matcher(content);
+
+            while (hashMatcher.find()) {
+                String hash = hashMatcher.group();
+                hash = hash.replace("@@", "");
+                if (!hashQuestionMap.containsKey(hash)) {
+                    Question question = new Question("", hash, "");
+                    hashQuestionMap.put(hash, question);
+                    answersMap.put(question, "");
+                }
+            }
+            
+            questionsLoaded = false;
         }
+
     }
     
     /**
