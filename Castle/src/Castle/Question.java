@@ -24,6 +24,7 @@ public class Question {
         this.hash = hash;
         this.type = type;
         this.posAnswers = new ArrayList<>();
+        posAnswers.clear();
     }
 
     public Question(String prompt, String hash, String type, List<String> posAnswers) {

@@ -103,6 +103,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     public void formatTextArea(Question question) {
         String answer = prompter.getAnswers().get(question);
         answerPane.getChildren().clear();
+        textAreaAnswer.setWrapText(true);
         textAreaAnswer.setMinSize(300, 200);
         textAreaAnswer.setLayoutX(13);
         textAreaAnswer.setLayoutY(38);

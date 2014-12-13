@@ -69,15 +69,15 @@ public class PDF {
      * 
      */
     public void loadQuestions() {
-//        String emptyList = "";
-//        answersMap.put(new Question("", "Age", ""), emptyList);
-//        answersMap.put(new Question("", "Damage", ""), emptyList);
-//        answersMap.put(new Question("", "House Size", ""), emptyList);
-//        answersMap.put(new Question("", "Check Box", ""), emptyList);
-//        //answersMap.put(new Question("What is your number?", "Number", "TextField"), emptyList);
-        //answersMap.put(new Question("Describe the flowing locks", "Hair", "TextArea"), emptyList);
-        //answersMap.put(new Question("What is your couch size?", "Couch Size", "Radio"), emptyList);
-        //answersMap.put(new Question("Which other ones do you want?", "More Boxes", "CheckBox"), emptyList);
+        String emptyList = "";
+        answersMap.put(new Question("how old", "Age", "TextField"), emptyList);
+        answersMap.put(new Question("describe it", "Damage", "TextArea"), emptyList);
+        answersMap.put(new Question("how big", "House Size", "Radio"), emptyList);
+        answersMap.put(new Question("check boxes", "Check Box", "CheckBox"), emptyList);
+        //answersMap.put(new Question("What is your number?", "Number", "TextField"), emptyList);
+        answersMap.put(new Question("Describe the flowing locks", "Hair", "TextArea"), emptyList);
+        answersMap.put(new Question("What is your couch size?", "Couch Size", "Radio"), emptyList);
+        answersMap.put(new Question("Which other ones do you want?", "More Boxes", "CheckBox"), emptyList);
     }
     
     /**
@@ -91,6 +91,11 @@ public class PDF {
                 currentQuestion.getType().equals("")) {
                 setQuestionsLoaded(false);
                 break;
+            } else if (currentQuestion.getType().equals("Radio") ||
+                       currentQuestion.getType().equals("CheckBox")) {
+                if (currentQuestion.getPosAnswers().isEmpty()) {
+                    setQuestionsLoaded(false);
+                }
             } else {
                 setQuestionsLoaded(true);
             }
