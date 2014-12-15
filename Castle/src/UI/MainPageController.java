@@ -24,10 +24,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
- *
+ * This is the controller for the main page the user will see upon loading
+ * the program
  * @author Alex
  */
-public class FXMLDocumentController implements Initializable, ControlledScreen {
+public class MainPageController implements Initializable, ControlledScreen {
     ScreensController myController;
     
     PDF pdf;
@@ -52,12 +53,20 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
     @FXML
     private Button quitButton;
     
+    @FXML
+    private Button clearQuestions;
     
+    /**
+     * Close the program upon a button push
+     */
     @FXML
     private void quitPress(){
         System.exit(0);
     }
     
+    /**
+     * Open the correct screen if the questions are loaded or not
+     */
     @FXML
     private void startPress(){
         if (!pdf.getQuestionsLoaded()) {
@@ -69,17 +78,26 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
         }
     }
     
+    /**
+     * Save the current status of the question and answers into json objects and
+     * save them to the pdf
+     */
     @FXML
     private void savePress(){
         JSONArray jsonArray = new JSONArray();
+
         for (Question question : pdf.getQuestionMap().keySet()) {
             JSONObject json = new JSONObject();
             json.put("prompt", question.getPrompt());
             json.put("hash", question.getHash());
             json.put("type", question.getType());
+            
+            // extra logic for more complicated cases
             if (question.getType().equals("CheckBox") ||
                 question.getType().equals("Radio")) {
                 String completePosAnswer = "";
+                
+                // save the possible answers in proper string format
                 for (String posAnswer : question.getPosAnswers()) {
                     completePosAnswer += posAnswer + " !@ ";
                 }
@@ -88,16 +106,21 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
             }
             jsonArray.add(json);
         }
+        
+        // save the array
         pdf.setKeywords(jsonArray);
         try {
-        pdf.save(filename);
+            pdf.save(filename);
         } catch (Exception e) {
-            System.out.println("PDF not saved;");
+            showWarning("PDF not saved;");
         }
         showWarning("Questions saved to PDF");
     }
 
-    
+    /**
+     * This will select the file to say to and then call the pdf's build function
+     * to export the updated pdf
+     */
     @FXML
     private void exportPDFPress(){
         FileChooser chooser = new FileChooser();
@@ -124,13 +147,36 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
         }
     }
     
+    /**
+     * This will call the question builder to allow question editing
+     */
     @FXML
     private void editPress(){
         myController.loadScreen(MainUI.builderPage, MainUI.builderFXML);
         myController.setScreen(MainUI.builderPage);
     }
     
+    /**
+     * This will remove the saved metadata to allow for a fresh
+     * start upon loading
+     */
+    @FXML
+    public void resetMetaData() {
+        JSONArray nullJSON = new JSONArray();
+        JSONObject clear = new JSONObject();
+        clear.put("@!clear!@", "");
+        nullJSON.add(clear);
+        pdf.setKeywords(nullJSON);
+        try {
+        pdf.save(filename);
+        } catch (Exception e) {
+            showWarning("Unable to clear questions");
+        }
+    }
     
+    /**
+     * This will select a file and call PDF's load file function
+     */
     @FXML
     private void loadPress() {
         System.out.println("Loading...");
@@ -158,17 +204,29 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
         } catch (Exception e) {
             ;
         }
+        
+        // allow buttons if PDF was loaded properly
         pdf.loadQuestions();
         startButton.setDisable(false);
         saveButton.setDisable(false);
         saveAsButton.setDisable(false);
         editButton.setDisable(false);
+        clearQuestions.setDisable(false);
     }
     
+    /**
+     * empty function called when scene loaded
+     * @param url
+     * @param rb 
+     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
     }    
     
+    /**
+     * Set parent screen and set values appropriately
+     * @param screenParent 
+     */
     public void setScreenParent(ScreensController  screenParent) {
         myController = screenParent;
         this.pdf = myController.pdf;
@@ -176,6 +234,10 @@ public class FXMLDocumentController implements Initializable, ControlledScreen {
         this.filename = myController.filename;
     }
     
+    /**
+     * Popup dialog box that display the string passed in
+     * @param warning 
+     */
     private void showWarning(String warning) {
         Stage popup = new Stage();
         VBox headsUp = new VBox();

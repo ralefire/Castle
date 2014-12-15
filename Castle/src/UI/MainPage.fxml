@@ -6,7 +6,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #9bdaef;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UI.FXMLDocumentController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #9bdaef;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UI.MainPageController">
    <center>
       <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="560.0" spacing="15.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
          <children>
@@ -22,6 +22,7 @@
             <Button fx:id="loadButton" minWidth="150.0" mnemonicParsing="false" onAction="#loadPress" text="Load" textAlignment="CENTER" />
             <Button fx:id="startButton" disable="true" minWidth="150.0" mnemonicParsing="false" onAction="#startPress" text="Start" />
             <Button fx:id="saveButton" disable="true" minWidth="150.0" mnemonicParsing="false" onAction="#savePress" text="Save Questions" />
+            <Button fx:id="clearQuestions" disable="true" minWidth="150.0" mnemonicParsing="false" onAction="#resetMetaData" text="Clear Stored Questions" />
             <Button fx:id="saveAsButton" disable="true" minWidth="150.0" mnemonicParsing="false" onAction="#exportPDFPress" text="Export PDF" />
             <Button fx:id="editButton" disable="true" minWidth="150.0" mnemonicParsing="false" onAction="#editPress" text="Edit Questions" />
             <Button fx:id="quitButton" minWidth="150.0" mnemonicParsing="false" onAction="#quitPress" text="Quit" />

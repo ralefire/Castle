@@ -33,8 +33,7 @@ import javafx.stage.Stage;
 
 
 /**
- * FXML Controller class
- *
+ * user interface for the answering of the questions
  * @author Alex
  */
 public class BuilderPromptController implements Initializable, ControlledScreen {
@@ -67,7 +66,8 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     private final ObservableList<Question> questions = FXCollections.observableArrayList();
     
     /**
-     * Initializes the controller class. 
+     * Initializes the controller class and handles saving when 
+     * new selections are made in the list view
      * @param url
      * @param rb
      */
@@ -97,7 +97,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     }    
     
     /**
-     * 
+     * This will prepare the text area for display
      * @param question 
      */
     public void formatTextArea(Question question) {
@@ -117,7 +117,8 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     }
     
     /**
-     * 
+     * select the correct radio button depending on the users answer to in the 
+     * question select none if need be
      * @param question
      */
     public void formatRadioButton(Question question) {
@@ -130,7 +131,10 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
             currentAnswer = listAnswer;
         } 
         
+        // remove the current button box
         buttonBox.getChildren().clear();
+        
+        // find correct button and set it.
         for (String posAnswer : question.getPosAnswers()) {
             RadioButton button = new RadioButton(posAnswer);
             button.setUserData(posAnswer);
@@ -145,24 +149,31 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     }
     
     /**
-     * 
+     * This will format the check box display depending on the answers already
+     * selected by the user
      */
     private void formatCheckBox(Question question) {
         buttonBox.setLayoutX(150);
         buttonBox.setLayoutY(66);
         answerPane.getChildren().clear();
-        
        
+        // remove all existing buttons
         buttonBox.getChildren().clear();
         
-        
+        // get all possibles
         List<String> possibleAnswers = question.getPosAnswers();
         String selectedAnswers = prompter.getAnswers().get(question);
+        
+        // empty the array
         checkboxArray.clear();
+        
+        // loop through possible answers
         for (String answer : possibleAnswers) {
             
             CheckBox current = new CheckBox(answer);
             checkboxArray.add(current);
+            
+            // select the possible answers found in the answer string
             if (selectedAnswers.contains(answer)) {
                 current.setSelected(true);
             }
@@ -176,7 +187,8 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     }
     
     /**
-     * 
+     * This will format the text field and fill it with answer if the question
+     * already has one saved.
      * @param question
      */
     public void formatTextField(Question question) {
@@ -194,14 +206,21 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     }
 
      /**
-     * 
+     * simple function to revert to home page and save the current answer
      */
     @FXML
     public void goBack() {
-        save(questionListView.getSelectionModel().getSelectedItem());
+        if (!questionListView.getSelectionModel().isEmpty()) {
+            save(questionListView.getSelectionModel().getSelectedItem());
+        }
         myController.setScreen(MainUI.mainPage);
     }
     
+    /**
+     * Will decide which save function to call depending
+     * on the type of the question passed in to the function
+     * @param question 
+     */
     @FXML
     public void save(Question question) {
         selected = question.getType();
@@ -221,24 +240,29 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         }
         
     }
-    
+    /**
+     * gets the answer from the text area and saves it to the question
+     * @param question 
+     */
     public void getTextAreaAnswer(Question question) {
         String answer = textAreaAnswer.getText();
-       
-        saveTextAnswer(answer, question);
+        prompter.addAnswer(question, answer);
     }
     
+    /**
+     * gets the answer from a text field and saves it to the question
+     * @param question 
+     */
     public void getTextFieldAnswer(Question question) {
         String answer = textFieldAnswer.getText();
-        
-        saveTextAnswer(answer, question);
-        
-    }
-
-    private void saveTextAnswer(String answer, Question question) {
         prompter.addAnswer(question, answer);
     }
 
+    
+    /**
+     * Set the users selection to the radio question as the answer
+     * @param question 
+     */
     public void getRadioAnswer(Question question) {
         String answer;
         if (radioButtons.getSelectedToggle() != null) {
@@ -249,20 +273,32 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         prompter.addAnswer(question, answer);
     }
     
+    /**
+     * This will extract the answers selected form the answer boxes and 
+     * save them to the answer string of the question
+     * @param question 
+     */
     public void getCheckBoxAnswer(Question question) {
         String answer;
         String answerString = "";
+        
+        // get the number of answers selected
         int numAnswers = 0;
         for (CheckBox checkbox : checkboxArray)  {
             if (checkbox.isSelected()) {
                 numAnswers++;
             }
         }
+        
+        // loop through and get string values of selected items
         int currentNumAnswers = 1;
         for (CheckBox checkbox : checkboxArray) {
             if (checkbox.isSelected()) {
                 if (numAnswers == 1) {
+                    // single answer form
                     answerString += checkbox.getText();
+                    
+                // formats string format for only two answers
                 } else if (numAnswers == 2) {
                     if (currentNumAnswers == 1) {
                         answerString += checkbox.getText();
@@ -271,6 +307,7 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
                     } else {
                         answerString += checkbox.getText();
                     }
+                // formats string to three or more
                 } else {
                     if (currentNumAnswers + 1 == numAnswers) {
                         answerString += checkbox.getText();
@@ -287,13 +324,15 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
                 }
             }
         }
+        // adds answer to map
         prompter.addAnswer(question, answerString);
         
         
     }
     
     /**
-     * 
+     * Set this screen as parent and passes values of pdf and prompter
+     * so they can be accessed. This function occurs on load of page
      * @param screenParent 
      */
     @Override
@@ -305,7 +344,8 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
     }
     
     /**
-     * 
+     * Function passes the values from the prompters map 
+     * into the map used by the controller
      */
     private void setQuestions() {
         Set<Question> questionSet = prompter.getAnswers().keySet();
@@ -316,11 +356,19 @@ public class BuilderPromptController implements Initializable, ControlledScreen 
         questionListView.setItems(questions);
     }
     
+    /**
+     * This function will create a dialog box that will display the warning 
+     * that is passed into the function
+     * @param warning 
+     */
     private void showWarning(String warning) {
+        // establish stage setup
         Stage popup = new Stage();
         VBox headsUp = new VBox();
         Text prompt = new Text(warning);
         prompt.setStyle("-fx-font-size: 11pt;");
+        
+        // adds children and displays
         headsUp.getChildren().add(prompt);
         headsUp.setAlignment(Pos.CENTER);
         popup.setScene(new Scene(headsUp, 300, 200));

@@ -158,7 +158,13 @@ public class PDF {
                     Object value = keysJSON.get(key);
                     System.out.println(value);
                     
-                    if (key.equals("prompt")) {
+                    if (key.equals("@!clear!@")) {
+                        try {
+                            parseHashes();
+                        } catch (Exception e) {
+                            System.out.println("Unable to parse PDF To find keywords");
+                        }
+                    } else if (key.equals("prompt")) {
                         newQuestion.setPrompt((String) value);
                     } else if (key.equals("hash")) {
                         newQuestion.setHash((String) value);
@@ -175,30 +181,36 @@ public class PDF {
                         }
                     }
                 });
+                if (newQuestion.getHash().equals("")) {
+                    break;
+                }
                 newQuestion.setPosAnswers(posAnswerList);
                 answersMap.put(newQuestion, "");
             }
         } else {
-
-            PDFTextStripper stripMe = new PDFTextStripper();
-            String content = stripMe.getText(document);
-
-            Pattern hashPattern = Pattern.compile("@@\\w+(\\s\\w+)?@@");
-            Matcher hashMatcher = hashPattern.matcher(content);
-
-            while (hashMatcher.find()) {
-                String hash = hashMatcher.group();
-                hash = hash.replace("@@", "");
-                if (!hashQuestionMap.containsKey(hash)) {
-                    Question question = new Question("", hash, "");
-                    hashQuestionMap.put(hash, question);
-                    answersMap.put(question, "");
-                }
-            }
-            
-            questionsLoaded = false;
+            parseHashes();
         }
 
+    }
+
+    private void parseHashes() throws IOException {
+        PDFTextStripper stripMe = new PDFTextStripper();
+        String content = stripMe.getText(document);
+        
+        Pattern hashPattern = Pattern.compile("@@\\w+(\\s\\w+)?@@");
+        Matcher hashMatcher = hashPattern.matcher(content);
+        
+        while (hashMatcher.find()) {
+            String hash = hashMatcher.group();
+            hash = hash.replace("@@", "");
+            if (!hashQuestionMap.containsKey(hash)) {
+                Question question = new Question("", hash, "");
+                hashQuestionMap.put(hash, question);
+                answersMap.put(question, "");
+            }
+        }
+
+        questionsLoaded = false;
     }
     
     /**

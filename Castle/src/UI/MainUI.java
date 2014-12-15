@@ -13,7 +13,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- *
+ * Main application class that will launch the program
  * @author Alex
  */
 public class MainUI extends Application {
@@ -21,12 +21,17 @@ public class MainUI extends Application {
     QuestionPrompter prompter = new QuestionPrompter();
     
     public static String mainPage = "main";
-    public static String mainFXML = "FXMLDocument.fxml";
+    public static String mainFXML = "MainPage.fxml";
     public static String prompterPage = "prompter";
     public static String prompterFXML = "BuilderPrompt.fxml";
     public static String builderPage = "builder";
     public static String builderFXML = "QuestionBuilder.fxml";
     
+    /**
+     * loads the main stage and show to to begin the program
+     * @param primaryStage
+     * @throws Exception 
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         ScreensController mainContainer = new ScreensController();
@@ -41,13 +46,6 @@ public class MainUI extends Application {
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
-        /*
-        Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
-        
-        Scene scene = new Scene(root);
-        
-        stage.setScene(scene);
-        stage.show();*/
     }
 
     /**
