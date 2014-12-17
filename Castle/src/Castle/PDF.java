@@ -67,21 +67,6 @@ public class PDF {
     
     /**
      * 
-     */
-    public void loadQuestions() {
-//        String emptyList = "";
-//        answersMap.put(new Question("how old", "Age", "TextField"), emptyList);
-//        answersMap.put(new Question("describe it", "Damage", "TextArea"), emptyList);
-//        answersMap.put(new Question("how big", "House Size", "Radio"), emptyList);
-//        answersMap.put(new Question("check boxes", "Check Box", "CheckBox"), emptyList);
-//        //answersMap.put(new Question("What is your number?", "Number", "TextField"), emptyList);
-//        answersMap.put(new Question("Describe the flowing locks", "Hair", "TextArea"), emptyList);
-//        answersMap.put(new Question("What is your couch size?", "Couch Size", "Radio"), emptyList);
-//        answersMap.put(new Question("Which other ones do you want?", "More Boxes", "CheckBox"), emptyList);
-    }
-    
-    /**
-     * 
      * @return 
      */
     public boolean getQuestionsLoaded() {
@@ -226,7 +211,6 @@ public class PDF {
            extractedContent = extractedContent.replaceAll(tempQuestion.getHash(), answersMap.get(tempQuestion)); // REGEX, Replacement
         }
         textContent = extractedContent;
-        System.out.println(textContent);
     }
     
     /**
@@ -271,8 +255,6 @@ public class PDF {
      */
     public void addAnswersToTextContent() throws IOException, ParseException {
         textContent = extractText();
-        
-
     } 
     
     /**
@@ -334,7 +316,6 @@ public class PDF {
         List<Object> lineSpaces = stripper.getLineSpaces();
         textContent = stripper.getContent();
         
-        PDRectangle pageRec = pageRecs.get(0);
         float xLLBoundary = stripper.getMinXWidth();
         float yLLBoundary = stripper.getMinYHeight();
         float xURBoundary = stripper.getMaxXWidth();
@@ -347,22 +328,16 @@ public class PDF {
         PDPageContentStream content = new PDPageContentStream(doc, page); // content stream for writing characters
         float xAxis = xLLBoundary;    // stores the x-axis position of the character
         float yAxis = yURBoundary;    // stores the y-axis position of the character
-        String textCharacter = "";
         String fontName = "";
-        byte[] eM = {(byte)'M'};
         float lineHeight = 0.0f;      
        
         // Set current and next textPosition objects from character list
 
-        //lineHeight = font.getFontHeight(eM, 0, 1); // get line height
         lineHeight = 15;
         
         addResponses();
         
         String lines[] = textContent.split("\\n");
-//            indents.add(0, 0.0f);
-//            characters.add(0,characters.get(0));
-//            lineSpaces.remove(0);
             
            
             int index = 0;
@@ -371,7 +346,6 @@ public class PDF {
        // for (String line : lines) {
          for (int j = 1; j < lines.length; j++) {   
             String line = lines[j];
-            System.out.println("line: " + line + ", lines size " + lines.length + ", indents: " + indents.size() + ", characters s: " + characters.size());
             
             TextPosition textPos = characters.get(index);
             font = textPos.getFont(); // font
@@ -379,7 +353,6 @@ public class PDF {
             fontName = font.toString(); // font name
             font = getFontFromName(fontName, fontSize); // set default font and font mapping
             
-            System.out.println("FONT: " + fontName + " " + textPos.getCharacter());
             xAxis = (float)indents.get(index);
             
             // reflow logic
@@ -447,9 +420,7 @@ public class PDF {
             String hash = "@@" + tempQuestion.getHash() + "@@";
             
             textContent = textContent.replaceAll(hash, answer); // REGEX, Replacement
-            //System.out.println("Answer: " + answer + " question hash: " + tempQuestion.getHash());
         }
-       // System.out.println(textContent);
     }
     
   

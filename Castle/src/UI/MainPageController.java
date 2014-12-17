@@ -206,7 +206,6 @@ public class MainPageController implements Initializable, ControlledScreen {
         }
         
         // allow buttons if PDF was loaded properly
-        pdf.loadQuestions();
         startButton.setDisable(false);
         saveButton.setDisable(false);
         saveAsButton.setDisable(false);
