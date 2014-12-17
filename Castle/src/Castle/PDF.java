@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,10 +46,11 @@ import org.json.simple.parser.ParseException;
  */
 public class PDF {
 
-    private PDDocument document;                // root PDF document object
+    PDDocument document;                // root PDF document object
+    //List<Question> questions;           // represents the PDF questions
     private Boolean isLoaded;           // true if pdf document is loaded, false otherwise
     private Map<Question, String> answersMap;   // maps questions to answers
-    private final Map<String, Question> hashQuestionMap;
+    private Map<String, Question> hashQuestionMap;
     private String textContent;         // represents the full PDF text content
     private boolean questionsLoaded;
 
@@ -60,9 +60,24 @@ public class PDF {
     public PDF() {
        // this.answers = new HashMap<>();
         this.isLoaded = false;
-        this.answersMap = new HashMap<>();
-        this.hashQuestionMap = new HashMap<>();
+        this.answersMap = new HashMap();
+        this.hashQuestionMap = new HashMap();
         this.questionsLoaded = false;
+    }
+    
+    /**
+     * 
+     */
+    public void loadQuestions() {
+//        String emptyList = "";
+//        answersMap.put(new Question("how old", "Age", "TextField"), emptyList);
+//        answersMap.put(new Question("describe it", "Damage", "TextArea"), emptyList);
+//        answersMap.put(new Question("how big", "House Size", "Radio"), emptyList);
+//        answersMap.put(new Question("check boxes", "Check Box", "CheckBox"), emptyList);
+//        //answersMap.put(new Question("What is your number?", "Number", "TextField"), emptyList);
+//        answersMap.put(new Question("Describe the flowing locks", "Hair", "TextArea"), emptyList);
+//        answersMap.put(new Question("What is your couch size?", "Couch Size", "Radio"), emptyList);
+//        answersMap.put(new Question("Which other ones do you want?", "More Boxes", "CheckBox"), emptyList);
     }
     
     /**
@@ -101,7 +116,7 @@ public class PDF {
     }
     
     public Map<Question, String> getQuestionMap() {
-        return Collections.unmodifiableMap(answersMap);
+        return answersMap;
     }
     
     /**
@@ -119,8 +134,9 @@ public class PDF {
      * @throws java.io.IOException
      * @throws org.json.simple.parser.ParseException
      */
-    @SuppressWarnings("unchecked")
     public void load(String filePath) throws IOException, ParseException {
+        if (filePath == null || filePath.equals(""))
+            filePath = "src/resources/6dot1.pdf";
 
         File file = new File(filePath);
         document = PDDocument.load(file); //This will load a document from a file into PDDocument.
@@ -130,7 +146,6 @@ public class PDF {
         
         if (jsonKeysArray != null) {
 
-            @SuppressWarnings("unchecked")
             Iterator<JSONObject> jsonKeysIterator = jsonKeysArray.iterator();
             while (jsonKeysIterator.hasNext()) {
                 
@@ -235,13 +250,12 @@ public class PDF {
      * @throws org.apache.pdfbox.exceptions.COSVisitorException 
      */
     public void save(PDDocument doc, String filePath) throws IOException, COSVisitorException{
-        if (doc == null) {
+        if (doc == null)
             return;
-        }
         File file = new File(filePath);
-        try (OutputStream out = new FileOutputStream(file)) {
-            doc.save(out);
-        }
+        OutputStream out = new FileOutputStream(file);
+        doc.save(out);
+        out.close();
     }
     
     /**
@@ -266,11 +280,11 @@ public class PDF {
      * @return hashQuestionMap
      */
     private Map<String, Question> getHashQuestionMap() {
-        Map<String, Question> hashQuestionsMap = new HashMap<>();
+        Map<String, Question> hashQuestionMap = new HashMap();
         answersMap.keySet().stream().forEach((q) -> {
-            hashQuestionsMap.put(q.getHash(), q);
+            hashQuestionMap.put(q.getHash(), q);
         });
-        return hashQuestionsMap;
+        return hashQuestionMap;
     }
     
     /**
@@ -285,9 +299,8 @@ public class PDF {
                 case "org.apache.pdfbox.pdmodel.font.PDType0Font@7a46a697":
                 case "org.apache.pdfbox.pdmodel.font.PDType0Font@3abfe836":
                     font = PDType1Font.TIMES_ITALIC;
-                    if (fontSize > 18) {
+                    if (fontSize > 18)
                         font = PDType1Font.TIMES_BOLD;
-                    }
                     break;
                 default:
                     font = PDType1Font.TIMES_ROMAN; //"org.apache.pdfbox.pdmodel.font.PDType0Font@3d04a311"
@@ -296,120 +309,122 @@ public class PDF {
     }
     
     /**
-     * Generates a new PDF and saves it to a file path
-     * @param filePath
+     * Generates a new PDF and saves it to a file
+     * @param savePath
      * @throws java.io.IOException
      */
     public void buildPDF(String filePath) throws IOException, Exception {
-        try (PDDocument doc = new PDDocument() // new document to be saved
-        ) {
-            PDPage page = new PDPage(); // start a new page
-            doc.setDocumentInformation(document.getDocumentInformation()); // set the metadata to document meta data
-            Map<String, Question> hashQuestionsMap = getHashQuestionMap();
+       PDDocument doc = new PDDocument();  // new document to be saved
+        PDPage page = new PDPage(); // start a new page
+        doc.setDocumentInformation(document.getDocumentInformation()); // set the metadata to document meta data
+        Map<String, Question> hashQuestionMap = getHashQuestionMap();
+
+        // get and set the valid text dimensions
+        List<PDRectangle> pageRecs = new ArrayList();
+        List<PDPage> allPages = document.getDocumentCatalog().getAllPages();
+        for (PDPage p : allPages) {
+            pageRecs.add(p.getArtBox());
+        }
+        
+                // strip the text from document and load each character into a list
+        TextStripper stripper = new TextStripper();
+        stripper.processLocation(document);
+        List<TextPosition> characters = stripper.getCharacters();
+        List<Object> indents = stripper.getIndents();
+        List<Object> lineSpaces = stripper.getLineSpaces();
+        textContent = stripper.getContent();
+        
+        PDRectangle pageRec = pageRecs.get(0);
+        float xLLBoundary = stripper.getMinXWidth();
+        float yLLBoundary = stripper.getMinYHeight();
+        float xURBoundary = stripper.getMaxXWidth();
+        float yURBoundary = stripper.getMaxYHeight();
+        yURBoundary = 710;
+        yLLBoundary = 100;
+                
+        PDFont font; // font for each character
+        float fontSize; // font size
+        PDPageContentStream content = new PDPageContentStream(doc, page); // content stream for writing characters
+        float xAxis = xLLBoundary;    // stores the x-axis position of the character
+        float yAxis = yURBoundary;    // stores the y-axis position of the character
+        String textCharacter = "";
+        String fontName = "";
+        byte[] eM = {(byte)'M'};
+        float lineHeight = 0.0f;      
+       
+        // Set current and next textPosition objects from character list
+
+        //lineHeight = font.getFontHeight(eM, 0, 1); // get line height
+        lineHeight = 15;
+        
+        addResponses();
+        
+        String lines[] = textContent.split("\\n");
+//            indents.add(0, 0.0f);
+//            characters.add(0,characters.get(0));
+//            lineSpaces.remove(0);
             
-            // get and set the valid text dimensions
-            @SuppressWarnings("unchecked")
-            List<PDRectangle> pageRecs = new ArrayList<>();
-            @SuppressWarnings("unchecked")
-            List<PDPage> allPages = document.getDocumentCatalog().getAllPages();
-            allPages.stream().forEach((p) -> {
-                pageRecs.add(p.getArtBox());
-            });
-            
-            // strip the text from document and load each character into a list
-            TextStripper stripper = new TextStripper();
-            stripper.processLocation(document);
-            List<TextPosition> characters = stripper.getCharacters();
-            List<Object> indents = stripper.getIndents();
-            List<Object> lineSpaces = stripper.getLineSpaces();
-            textContent = stripper.getContent();
-            
-            PDRectangle pageRec = pageRecs.get(0);
-            float xLLBoundary = stripper.getMinXWidth();
-            float yLLBoundary = stripper.getMinYHeight();
-            float xURBoundary = stripper.getMaxXWidth();
-            float yURBoundary = stripper.getMaxYHeight();
-            yURBoundary = 710;
-            yLLBoundary = 100;
-            
-            PDFont font; // font for each character
-            float fontSize; // font size
-            PDPageContentStream content = new PDPageContentStream(doc, page); // content stream for writing characters
-            float xAxis = xLLBoundary;    // stores the x-axis position of the character
-            float yAxis = yURBoundary;    // stores the y-axis position of the character
-            String fontName = "";
-            float lineHeight = 0.0f;
-            
-            // Set current and next textPosition objects from character list
-            
-            lineHeight = 15;
-            
-            addResponses();
-            
-            String lines[] = textContent.split("\\n");
-            
-            
+           
             int index = 0;
             String extra = "";
+
+       // for (String line : lines) {
+         for (int j = 1; j < lines.length; j++) {   
+            String line = lines[j];
+            System.out.println("line: " + line + ", lines size " + lines.length + ", indents: " + indents.size() + ", characters s: " + characters.size());
             
-            for (int j = 1; j < lines.length; j++) {
-                String line = lines[j];
-                System.out.println("line: " + line + ", lines size " + lines.length + ", indents: " + indents.size() + ", characters s: " + characters.size());
-                
-                TextPosition textPos = characters.get(index);
-                font = textPos.getFont(); // font
-                fontSize = textPos.getFontSize(); // font size
-                fontName = font.toString(); // font name
-                font = getFontFromName(fontName, fontSize); // set default font and font mapping
-                
-                System.out.println("FONT: " + fontName + " " + textPos.getCharacter());
-                xAxis = (float)indents.get(index);
-                
-                // reflow logic
-                int width = (line.length());
-                int xLimit = (int)((xURBoundary - xAxis) / textPos.getWidth());
-                xLimit = 85;
-                
-                extra += line;
-                line = extra;
-                
-                
-                if (width > xLimit) {
-                    System.out.println("Width: " + width + " URX: " + xLimit);
-                    width = (line.length() - xLimit);
-                    extra = line.substring(xLimit); // get the substring
-                    line = line.substring(0, xLimit); //
-                    System.out.println("cut part: " + extra);
-                    System.out.println("line after:" + line);
-                    indents.add(index + 1, xAxis); // add extra indent to array
-                    characters.add(index + 1, textPos);
-                    lineSpaces.add(index + 1, lineHeight);
-                } else {
-                    extra = "";
-                }
-                
-                index++;
-                
-                // Logic for starting a new page
-                if ( yAxis < yLLBoundary) {
-                    content.close();
-                    doc.addPage(page);
-                    page = new PDPage();
-                    content = new PDPageContentStream(doc, page);
-                    yAxis = yURBoundary;
-                }
-                content.beginText();
-                yAxis -= lineHeight;
-                writeCharacter(content, line, font, fontSize, xAxis, yAxis);
-                content.endText();
-                
+            TextPosition textPos = characters.get(index);
+            font = textPos.getFont(); // font
+            fontSize = textPos.getFontSize(); // font size
+            fontName = font.toString(); // font name
+            font = getFontFromName(fontName, fontSize); // set default font and font mapping
+            
+            System.out.println("FONT: " + fontName + " " + textPos.getCharacter());
+            xAxis = (float)indents.get(index);
+            
+            // reflow logic
+            int width = (line.length());
+            int xLimit = (int)((xURBoundary - xAxis) / textPos.getWidth());
+            xLimit = 85;
+            
+            extra += line;
+            line = extra;
+            
+            
+            if (width > (int)xLimit) {
+               System.out.println("Width: " + width + " URX: " + xLimit);
+                width = (line.length() - (int)(xLimit));
+                extra = line.substring(xLimit); // get the substring
+                line = line.substring(0, xLimit); // 
+                System.out.println("cut part: " + extra); 
+                System.out.println("line after:" + line);
+                indents.add(index + 1, xAxis); // add extra indent to array
+                characters.add(index + 1, textPos);
+                lineSpaces.add(index + 1, lineHeight);
+            } else {
+                extra = "";
             }
             
-            content.close(); // close content stream
-            doc.addPage(page); // add remaining page
-            save(doc, filePath); // save doc
-            doc.close(); // close doc
-        } // start a new page
+            index++;
+//            yAxis -= lineHeight;
+            // Logic for starting a new page 
+            if ( yAxis < yLLBoundary) {
+                content.close();
+                doc.addPage(page);
+                page = new PDPage();
+                content = new PDPageContentStream(doc, page);
+                yAxis = yURBoundary;
+            } 
+            content.beginText();
+            writeCharacter(content, line, font, fontSize, xAxis, yAxis -= lineHeight);
+            content.endText();
+            
+        }
+
+        content.close(); // close content stream
+        doc.addPage(page); // add remaining page
+        save(doc, filePath); // save doc
+        doc.close(); // close doc
     }
      
     
@@ -427,12 +442,14 @@ public class PDF {
      * @throws ParseException 
      */
     public void addResponses() throws IOException, ParseException {
-        answersMap.keySet().stream().forEach((tempQuestion) -> {
+        for (Question tempQuestion : answersMap.keySet()) {
             String answer = answersMap.get(tempQuestion);
             String hash = "@@" + tempQuestion.getHash() + "@@";
             
             textContent = textContent.replaceAll(hash, answer); // REGEX, Replacement
-        });
+            //System.out.println("Answer: " + answer + " question hash: " + tempQuestion.getHash());
+        }
+       // System.out.println(textContent);
     }
     
   
