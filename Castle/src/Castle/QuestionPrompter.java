@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The QuestionPrompter is a GUI to ask the user questions and store the answers.
+ * The QuestionPrompter is a class to ask the user questions and store the answers.
  * @author Xandron
  */
 public class QuestionPrompter {
