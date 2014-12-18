@@ -17,18 +17,17 @@ import org.apache.pdfbox.util.TextPosition;
  */
 public class TextStripper extends PDFTextStripper  {
 
-    private List<TextPosition> characters = new ArrayList();
+    private List<TextPosition> characters = new ArrayList<>();
     private float previousX;
     private float previousY = 0.0f;
-    private TextPosition previousT;
-    private List<Object> indents = new ArrayList();
+    private List<Object> indents = new ArrayList<>();
     private String content = "";
     private String fullContent = "";
     private float maxXWidth = 0.0f;
     private float minXWidth = 0.0f;
     private float maxYHeight = 0.0f;
     private float minYHeight = 0.0f;    
-    private List<Object> lineSpaces = new ArrayList();
+    private List<Object> lineSpaces = new ArrayList<>();
 
     /**
      * getter for characters

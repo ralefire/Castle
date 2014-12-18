@@ -6,8 +6,7 @@ import java.util.List;
 
 /**
  * Question object representing a single question
- * @author Admin
- */
+ */ 
 public class Question {
     private String prompt;
     private String hash;
@@ -30,7 +29,7 @@ public class Question {
     }
 
     /**
-     * Question constructor
+     * Constructor that includes possible answers
      * @param prompt
      * @param hash
      * @param type
@@ -45,6 +44,7 @@ public class Question {
     
     /**
      * Getter for prompt
+     * Simple getter
      * @return 
      */
     public String getPrompt() {
@@ -108,8 +108,7 @@ public class Question {
     }
     
     /**
-     * Gets the hash value as a string
-     * @return 
+     * Allows for a simple display of the question by the hash value
      */
     @Override
     public String toString() {
