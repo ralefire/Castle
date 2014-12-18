@@ -9,11 +9,8 @@ import org.apache.pdfbox.util.PDFTextStripper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.TextPosition;
 
@@ -23,18 +20,17 @@ import org.apache.pdfbox.util.TextPosition;
  */
 public class TextStripper extends PDFTextStripper  {
 
-    private List<TextPosition> characters = new ArrayList();
+    private List<TextPosition> characters = new ArrayList<>();
     private float previousX;
     private float previousY = 0.0f;
-    private TextPosition previousT;
-    private List<Object> indents = new ArrayList();
+    private List<Object> indents = new ArrayList<>();
     private String content = "";
     private String fullContent = "";
     private float maxXWidth = 0.0f;
     private float minXWidth = 0.0f;
     private float maxYHeight = 0.0f;
     private float minYHeight = 0.0f;    
-    private List<Object> lineSpaces = new ArrayList();
+    private List<Object> lineSpaces = new ArrayList<>();
 
     public List<Object> getLineSpaces() {
         return lineSpaces;
