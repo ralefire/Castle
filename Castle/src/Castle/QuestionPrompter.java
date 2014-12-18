@@ -12,7 +12,7 @@ public class QuestionPrompter {
     Map<Question, String> answers;
 
     /**
-     * 
+     * Simple getter
      * @return Map<Question, String> 
      */
     public Map<Question, String> getAnswers() {
@@ -20,7 +20,7 @@ public class QuestionPrompter {
     }
 
     /**
-     * 
+     * Simple Setter
      * @param answers 
      */
     public void setAnswers(Map<Question, String> answers) {
@@ -28,14 +28,14 @@ public class QuestionPrompter {
     }
 
     /**
-     * 
+     * Simple constructor
      */
     public QuestionPrompter(){
         this.answers = new HashMap<>();
     }
     
     /**
-     * 
+     * simple setter
      * @param questions 
      */
     public void setQuestions(List<Question> questions) {
@@ -45,6 +45,11 @@ public class QuestionPrompter {
         }
     }
     
+    /**
+     * Simple function to add a question and answer to the list
+     * @param question
+     * @param answer 
+     */
     public void addAnswer(Question question, String answer) {
         answers.put(question, answer);
     }
