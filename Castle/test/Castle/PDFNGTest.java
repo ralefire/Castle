@@ -46,15 +46,24 @@ public class PDFNGTest {
 
     /**
      * Test of getQuestionsLoaded method, of class PDF.
+     * @throws java.io.IOException
      */
     @Test
-    public void testGetQuestionsLoaded() {
+    public void testGetQuestionsLoaded() throws IOException, ParseException {
         System.out.println("getQuestionsLoaded");
         PDF instance = new PDF();
+        String filePath = "";
+        instance.load(filePath);
         boolean expResult = false;
         boolean result = instance.getQuestionsLoaded();
         assertEquals(result, expResult);
-        fail("The test case is a prototype.");
+        /*
+        filePath = "src\\resources\\6dot1.pdf";
+        instance.load(filePath);
+        expResult = true;
+        result = instance.getQuestionsLoaded();
+        assertEquals(result, expResult);
+        */
     }
 
     /**
@@ -66,7 +75,6 @@ public class PDFNGTest {
         boolean bool = false;
         PDF instance = new PDF();
         instance.setQuestionsLoaded(bool);
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -79,7 +87,6 @@ public class PDFNGTest {
         Map expResult = new HashMap();
         Map result = instance.getQuestionMap();
         assertEquals(result, expResult);
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -95,7 +102,6 @@ public class PDFNGTest {
         } catch (IOException | ParseException ex) {
             Logger.getLogger(PDFNGTest.class.getName()).log(Level.SEVERE, null, ex);
         }
-        fail("The test case is a prototype.");
         
     }
 
@@ -105,10 +111,11 @@ public class PDFNGTest {
     @Test
     public void testSave_String() throws Exception {
         System.out.println("save");
-        String filePath = "";
+        String filePath = "src\\resources\\6dot1.pdf";
         PDF instance = new PDF();
+        instance.load(filePath);
+        filePath = "src\\resources\\test.pdf";
         instance.save(filePath);
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -122,30 +129,20 @@ public class PDFNGTest {
         instance.load(filePath);
         filePath = "src\\resources\\test.pdf";
         instance.buildPDF(filePath);
-        fail("The test case is a prototype.");
     }
 
     /**
      * Test of setKeywords method, of class PDF.
+     * @throws java.io.IOException
      */
     @Test
-    public void testSetKeywords() {
+    public void testSetKeywords() throws IOException, ParseException {
         System.out.println("setKeywords");
-        JSONArray data = null;
+        JSONArray data = new JSONArray();
         PDF instance = new PDF();
+        
+        String filePath = "src\\resources\\6dot1.pdf";
+        instance.load(filePath);
         instance.setKeywords(data);
-        fail("The test case is a prototype.");
     }
-
-    /**
-     * Test of loadPDFAttachment method, of class PDF.
-     */
-    @Test
-    public void testLoadPDFAttachment() throws Exception {
-        System.out.println("loadPDFAttachment");
-        String filePath = "";
-        PDF instance = new PDF();
-        fail("The test case is a prototype.");
-    }
-    
 }

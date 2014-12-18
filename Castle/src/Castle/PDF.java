@@ -92,6 +92,7 @@ public class PDF {
     public void setQuestionsLoaded(boolean bool) {
         questionsLoaded = bool;
     }
+    
     /**
      * setter method for answers map
      * @param answersMap 
