@@ -46,7 +46,7 @@ import org.json.simple.parser.ParseException;
  */
 public class PDF {
 
-    PDDocument document;                // root PDF document object
+    private PDDocument document;                // root PDF document object
     //List<Question> questions;           // represents the PDF questions
     private Boolean isLoaded;           // true if pdf document is loaded, false otherwise
     private Map<Question, String> answersMap;   // maps questions to answers
@@ -96,7 +96,7 @@ public class PDF {
      * setter method for answers map
      * @param answersMap 
      */
-    public void setAnswers(Map<Question, String> answersMap) {
+    private void setAnswers(Map<Question, String> answersMap) {
         this.answersMap = answersMap;
     }
     
@@ -108,7 +108,7 @@ public class PDF {
      * true if document already loaded, false otherwise
      * @return 
      */
-    public Boolean isLoaded() {
+    private Boolean isLoaded() {
         return isLoaded;
     }
     
@@ -205,7 +205,7 @@ public class PDF {
      * @throws IOException
      * @throws ParseException 
      */
-    public void insertResponses() throws IOException, ParseException {
+    private void insertResponses() throws IOException, ParseException {
         String extractedContent = extractText();
         for (Question tempQuestion : answersMap.keySet()) {
            extractedContent = extractedContent.replaceAll(tempQuestion.getHash(), answersMap.get(tempQuestion)); // REGEX, Replacement
@@ -233,7 +233,7 @@ public class PDF {
      * @throws java.io.IOException 
      * @throws org.apache.pdfbox.exceptions.COSVisitorException 
      */
-    public void save(PDDocument doc, String filePath) throws IOException, COSVisitorException{
+    private void save(PDDocument doc, String filePath) throws IOException, COSVisitorException{
         if (doc == null)
             return;
         File file = new File(filePath);
@@ -246,14 +246,14 @@ public class PDF {
      * This exports the PDF in the final format to the location specified.
      * @param filename 
      */
-    public void export(String filename){}
+    private void export(String filename){}
 
     /**
      * Inserts the answer strings into the context text
      * @throws IOException
      * @throws ParseException 
      */
-    public void addAnswersToTextContent() throws IOException, ParseException {
+    private void addAnswersToTextContent() throws IOException, ParseException {
         textContent = extractText();
     } 
     
@@ -414,7 +414,7 @@ public class PDF {
      * @throws IOException
      * @throws ParseException 
      */
-    public void addResponses() throws IOException, ParseException {
+    private void addResponses() throws IOException, ParseException {
         for (Question tempQuestion : answersMap.keySet()) {
             String answer = answersMap.get(tempQuestion);
             String hash = "@@" + tempQuestion.getHash() + "@@";
@@ -430,7 +430,7 @@ public class PDF {
      * @return 
      * @throws IOException 
      */
-    public String extractText() throws IOException {
+    private String extractText() throws IOException {
         String content;
         PDFTextStripper stripper = new PDFTextStripper();
         content = stripper.getText(document);
@@ -451,7 +451,7 @@ public class PDF {
      * @return
      * @throws ParseException 
      */
-    public JSONArray getKeywordsAsJSONArray() throws ParseException {
+    private JSONArray getKeywordsAsJSONArray() throws ParseException {
         String info = document.getDocumentInformation().getCustomMetadataValue("HashKeys");     
         return (JSONArray)new JSONParser().parse(info);
     }
@@ -461,7 +461,7 @@ public class PDF {
      * @return
      * @throws ParseException 
      */
-    public String getKeywordsAsString() throws ParseException {
+    private String getKeywordsAsString() throws ParseException {
         String info = document.getDocumentInformation().getCustomMetadataValue("HashKeys");     
         return info;
     }
@@ -470,7 +470,7 @@ public class PDF {
      * Attach the keys file to the PDF
      * @throws IOException 
      */
-    public void attachKeysFile() throws IOException {
+    private void attachKeysFile() throws IOException {
         PDEmbeddedFilesNameTreeNode efTree = new PDEmbeddedFilesNameTreeNode();
 
         //first create the file specification, which holds the embedded file
@@ -498,7 +498,7 @@ public class PDF {
     }
     
     
-    public void loadPDFAttachment(String filePath) throws IOException {
+    private void loadPDFAttachment(String filePath) throws IOException {
         PDDocumentNameDictionary namesDictionary = new PDDocumentNameDictionary(document.getDocumentCatalog());
         PDEmbeddedFilesNameTreeNode efTree = namesDictionary.getEmbeddedFiles();
         if (efTree != null)
@@ -543,7 +543,7 @@ public class PDF {
         }
     }
     
-    public static PDEmbeddedFile getEmbeddedFile(PDComplexFileSpecification fileSpec )
+    private static PDEmbeddedFile getEmbeddedFile(PDComplexFileSpecification fileSpec )
     {
         // search for the first available alternative of the embedded file
         PDEmbeddedFile embeddedFile = null;
