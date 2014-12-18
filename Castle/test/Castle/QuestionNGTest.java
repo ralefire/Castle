@@ -1,5 +1,6 @@
 package Castle;
 
+import java.util.ArrayList;
 import java.util.List;
 import static org.testng.Assert.*;
 import org.testng.annotations.AfterClass;
@@ -39,12 +40,10 @@ public class QuestionNGTest {
     @Test
     public void testGetPrompt() {
         System.out.println("getPrompt");
-        Question instance = null;
-        String expResult = "";
+        Question instance = new Question("1", "2", "Radio");
+        String expResult = "1";
         String result = instance.getPrompt();
         assertEquals(result, expResult);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -53,11 +52,12 @@ public class QuestionNGTest {
     @Test
     public void testSetPrompt() {
         System.out.println("setPrompt");
-        String prompt = "";
-        Question instance = null;
+        String prompt = "What is your name?";
+        Question instance = new Question("prompt", "name", "Text");
         instance.setPrompt(prompt);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        String result = instance.getPrompt();
+        String expResult = "What is your name?";
+        assertEquals(result, expResult);
     }
 
     /**
@@ -66,12 +66,10 @@ public class QuestionNGTest {
     @Test
     public void testGetHash() {
         System.out.println("getHash");
-        Question instance = null;
-        String expResult = "";
+        Question instance = new Question("Name", "NAME", "Text");
+        String expResult = "NAME";
         String result = instance.getHash();
         assertEquals(result, expResult);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -80,11 +78,12 @@ public class QuestionNGTest {
     @Test
     public void testSetHash() {
         System.out.println("setHash");
-        String hash = "";
-        Question instance = null;
+        String hash = "dog";
+        Question instance = new Question("prompt", "name", "Radio");
         instance.setHash(hash);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        String result = instance.getHash();
+        String expResult = hash;
+        assertEquals(result, expResult);
     }
 
     /**
@@ -93,12 +92,10 @@ public class QuestionNGTest {
     @Test
     public void testGetType() {
         System.out.println("getType");
-        Question instance = null;
-        String expResult = "";
+        Question instance = new Question("prompt", "name", "Radio");
+        String expResult = "Radio";
         String result = instance.getType();
         assertEquals(result, expResult);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -107,11 +104,12 @@ public class QuestionNGTest {
     @Test
     public void testSetType() {
         System.out.println("setType");
-        String type = "";
-        Question instance = null;
+        String type = "Text";
+        Question instance = new Question("prompt", "name", "Radio");
         instance.setType(type);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        String result = instance.getType();
+        String expResult = type;
+        assertEquals(result, expResult);
     }
 
     /**
@@ -120,12 +118,10 @@ public class QuestionNGTest {
     @Test
     public void testGetPosAnswers() {
         System.out.println("getPosAnswers");
-        Question instance = null;
-        List expResult = null;
+        Question instance = new Question("prompt", "name", "Radio");
+        List expResult = new ArrayList();
         List result = instance.getPosAnswers();
         assertEquals(result, expResult);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -134,11 +130,13 @@ public class QuestionNGTest {
     @Test
     public void testSetPosAnswers() {
         System.out.println("setPosAnswers");
-        List<String> posAnswers = null;
-        Question instance = null;
+        List<String> posAnswers = new ArrayList<>();
+        posAnswers.add("spot");
+        Question instance = new Question("prompt", "dog", "Radio");
         instance.setPosAnswers(posAnswers);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        List<String> result = instance.getPosAnswers();
+        List<String> expResult = posAnswers;
+        assertEquals(result, expResult);
     }
 
     /**
@@ -147,12 +145,10 @@ public class QuestionNGTest {
     @Test
     public void testToString() {
         System.out.println("toString");
-        Question instance = null;
-        String expResult = "";
+        Question instance = new Question("prompt", "name", "Radio");
+        String expResult = "name";
         String result = instance.toString();
         assertEquals(result, expResult);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
     
 }
