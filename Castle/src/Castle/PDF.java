@@ -47,12 +47,11 @@ import org.json.simple.parser.ParseException;
 public class PDF {
 
     private PDDocument document;                // root PDF document object
-    //List<Question> questions;           // represents the PDF questions
     private Boolean isLoaded;           // true if pdf document is loaded, false otherwise
     private Map<Question, String> answersMap;   // maps questions to answers
     private Map<String, Question> hashQuestionMap;
     private String textContent;         // represents the full PDF text content
-    private boolean questionsLoaded;
+    private boolean questionsLoaded; // true if questions loaded, false otherwise
 
     /**
      * default constructor
@@ -66,8 +65,8 @@ public class PDF {
     }
     
     /**
-     * 
-     * @return 
+     * Determines whether or not questions have been loaded yet
+     * @return true if questions loaded, false otherwise
      */
     public boolean getQuestionsLoaded() {
         for (Question currentQuestion : answersMap.keySet()) {
@@ -89,6 +88,10 @@ public class PDF {
         return questionsLoaded;
     }
     
+    /**
+     * setter method for questionsLoaded
+     * @param bool 
+     */
     public void setQuestionsLoaded(boolean bool) {
         questionsLoaded = bool;
     }
@@ -101,13 +104,17 @@ public class PDF {
         this.answersMap = answersMap;
     }
     
+    /**
+     * getter method for answers map
+     * @return answersMap
+     */
     public Map<Question, String> getQuestionMap() {
         return answersMap;
     }
     
     /**
      * true if document already loaded, false otherwise
-     * @return 
+     * @return true if document already loaded, false otherwise
      */
     private Boolean isLoaded() {
         return isLoaded;
@@ -115,25 +122,27 @@ public class PDF {
     
 
     /**
-     * This loads the filename into the PDF and parses the PDF
+     * This loads the given file into the PDF and parses the PDF
+     * to load the question/answer meta-data
      * @param filePath
      * @throws java.io.IOException
      * @throws org.json.simple.parser.ParseException
      */
     public void load(String filePath) throws IOException, ParseException {
-        if (filePath == null || filePath.equals(""))
+        if (filePath == null || filePath.equals("")) // set default filePath if none specified
             filePath = "src/resources/6dot1.pdf";
 
-        File file = new File(filePath);
-        document = PDDocument.load(file); //This will load a document from a file into PDDocument.
-        isLoaded = true;
+        File file = new File(filePath); // create a file object from the filepath
+        document = PDDocument.load(file); // load a PDDocument from the file
+        isLoaded = true; // set isLoaded as file is now loaded!
         
-        JSONArray jsonKeysArray = getKeywordsAsJSONArray();
+        JSONArray jsonKeysArray = getKeywordsAsJSONArray(); // get keys from PDFMetadata
         
+        // if keys found, load them!
         if (jsonKeysArray != null) {
 
             Iterator<JSONObject> jsonKeysIterator = jsonKeysArray.iterator();
-            while (jsonKeysIterator.hasNext()) {
+            while (jsonKeysIterator.hasNext()) { // loop through keys
                 
                 JSONObject keysJSON = jsonKeysIterator.next();
                 
@@ -144,7 +153,7 @@ public class PDF {
                     Object value = keysJSON.get(key);
                     System.out.println(value);
                     
-                    if (key.equals("@!clear!@")) {
+                    if (key.equals("@!clear!@")) { // if keys are empty then try parsing for hashes
                         try {
                             parseHashes();
                         } catch (Exception e) {
@@ -179,13 +188,20 @@ public class PDF {
 
     }
 
+    /**
+     * Parses the PDF for special hash characters of the form @@hashname@@
+     * @throws IOException 
+     */
     private void parseHashes() throws IOException {
-        PDFTextStripper stripMe = new PDFTextStripper();
+        // stip out the text
+        PDFTextStripper stripMe = new PDFTextStripper(); 
         String content = stripMe.getText(document);
         
-        Pattern hashPattern = Pattern.compile("@@\\w+(\\s\\w+)?@@");
+        // search for hashes of the form @@hashname@@ allowing for multiple words in the hash name
+        Pattern hashPattern = Pattern.compile("@@\\w+(\\s\\w+)?@@"); 
         Matcher hashMatcher = hashPattern.matcher(content);
         
+        // load the found hashes into the answers map
         while (hashMatcher.find()) {
             String hash = hashMatcher.group();
             hash = hash.replace("@@", "");
@@ -195,7 +211,6 @@ public class PDF {
                 answersMap.put(question, "");
             }
         }
-
         questionsLoaded = false;
     }
     
@@ -242,12 +257,6 @@ public class PDF {
         doc.save(out);
         out.close();
     }
-    
-    /**
-     * This exports the PDF in the final format to the location specified.
-     * @param filename 
-     */
-    private void export(String filename){}
 
     /**
      * Inserts the answer strings into the context text
@@ -260,7 +269,7 @@ public class PDF {
     
     /**
      * builds a map of hashes and questions from answers map.
-     * @return hashQuestionMap
+     * @return hashQuestionMap1
      */
     private Map<String, Question> getHashQuestionMap() {
         Map<String, Question> hashQuestionMap = new HashMap();
@@ -293,14 +302,15 @@ public class PDF {
     
     /**
      * Generates a new PDF and saves it to a file
-     * @param savePath
+     * This includes inserting the responses and re-flowing the rest of the PDF
+     * @param filePath
      * @throws java.io.IOException
      */
     public void buildPDF(String filePath) throws IOException, Exception {
        PDDocument doc = new PDDocument();  // new document to be saved
         PDPage page = new PDPage(); // start a new page
         doc.setDocumentInformation(document.getDocumentInformation()); // set the metadata to document meta data
-        Map<String, Question> hashQuestionMap = getHashQuestionMap();
+        Map<String, Question> hashQuestionMap1 = getHashQuestionMap();
 
         // get and set the valid text dimensions
         List<PDRectangle> pageRecs = new ArrayList();
@@ -309,7 +319,7 @@ public class PDF {
             pageRecs.add(p.getArtBox());
         }
         
-                // strip the text from document and load each character into a list
+        // strip the text from document and load each character into a list
         TextStripper stripper = new TextStripper();
         stripper.processLocation(document);
         List<TextPosition> characters = stripper.getCharacters();
@@ -317,10 +327,12 @@ public class PDF {
         List<Object> lineSpaces = stripper.getLineSpaces();
         textContent = stripper.getContent();
         
+        // get valid PDF dimensions
         float xLLBoundary = stripper.getMinXWidth();
         float yLLBoundary = stripper.getMinYHeight();
         float xURBoundary = stripper.getMaxXWidth();
         float yURBoundary = stripper.getMaxYHeight();
+        // set default values for template PDF
         yURBoundary = 710;
         yLLBoundary = 100;
                 
@@ -330,57 +342,48 @@ public class PDF {
         float xAxis = xLLBoundary;    // stores the x-axis position of the character
         float yAxis = yURBoundary;    // stores the y-axis position of the character
         String fontName = "";
-        float lineHeight = 0.0f;      
-       
-        // Set current and next textPosition objects from character list
-
-        lineHeight = 15;
+        float lineHeight = 15f;      
         
-        addResponses();
-        
-        String lines[] = textContent.split("\\n");
-            
-           
-            int index = 0;
+        addResponses(); // insert the responses from answers/questions map into textContent variable
+        String lines[] = textContent.split("\\n"); // split textContent by newlines
+            int index = 0; // index for indents and characters list
             String extra = "";
 
-       // for (String line : lines) {
-         for (int j = 1; j < lines.length; j++) {   
+        // loop through lines
+        for (int j = 1; j < lines.length; j++) {   
             String line = lines[j];
             
-            TextPosition textPos = characters.get(index);
+            TextPosition textPos = characters.get(index); // get character TextPosition object
             font = textPos.getFont(); // font
             fontSize = textPos.getFontSize(); // font size
             fontName = font.toString(); // font name
             font = getFontFromName(fontName, fontSize); // set default font and font mapping
             
-            xAxis = (float)indents.get(index);
+            xAxis = (float)indents.get(index);  // set left indent of the line
             
             // reflow logic
             int width = (line.length());
             int xLimit = (int)((xURBoundary - xAxis) / textPos.getWidth());
             xLimit = 85;
             
+            // insert the extra line width before the next line
             extra += line;
             line = extra;
             
-            
+            // line width goes past the limit then split the line and add the extra to extra
             if (width > (int)xLimit) {
-               System.out.println("Width: " + width + " URX: " + xLimit);
                 width = (line.length() - (int)(xLimit));
                 extra = line.substring(xLimit); // get the substring
-                line = line.substring(0, xLimit); // 
-                System.out.println("cut part: " + extra); 
-                System.out.println("line after:" + line);
+                line = line.substring(0, xLimit); // get the current line
                 indents.add(index + 1, xAxis); // add extra indent to array
-                characters.add(index + 1, textPos);
-                lineSpaces.add(index + 1, lineHeight);
+                characters.add(index + 1, textPos); // add a new character to the list for the extra line
+                lineSpaces.add(index + 1, lineHeight); // add a new indent to the list for the extra line
             } else {
-                extra = "";
+                extra = ""; // reset extra
             }
             
             index++;
-//            yAxis -= lineHeight;
+
             // Logic for starting a new page 
             if ( yAxis < yLLBoundary) {
                 content.close();
@@ -390,9 +393,8 @@ public class PDF {
                 yAxis = yURBoundary;
             } 
             content.beginText();
-            writeCharacter(content, line, font, fontSize, xAxis, yAxis -= lineHeight);
+            writeLine(content, line, font, fontSize, xAxis, yAxis -= lineHeight); // draw the line
             content.endText();
-            
         }
 
         content.close(); // close content stream
@@ -401,8 +403,17 @@ public class PDF {
         doc.close(); // close doc
     }
      
-    
-    private void writeCharacter(PDPageContentStream content, String character , PDFont font, float fontSize, float xAxis, float yAxis ) throws IOException {
+    /**
+     * Use the character data and a string to draw a line of text on the PDF
+     * @param content
+     * @param character
+     * @param font
+     * @param fontSize
+     * @param xAxis
+     * @param yAxis
+     * @throws IOException 
+     */
+    private void writeLine(PDPageContentStream content, String character , PDFont font, float fontSize, float xAxis, float yAxis ) throws IOException {
             content.setFont( font, fontSize ); // set font (mandatory)
             content.moveTextPositionByAmount( xAxis, yAxis ); // set text position (mandatory)
             content.drawString(character); // draw a character    
@@ -449,7 +460,7 @@ public class PDF {
     
     /**
      * get keywords and return them as a JSONArray
-     * @return
+     * @return key words formatted as a JSONArray
      * @throws ParseException 
      */
     private JSONArray getKeywordsAsJSONArray() throws ParseException {
@@ -459,7 +470,7 @@ public class PDF {
     
     /**
      * get keywords meta-data as a String object
-     * @return
+     * @return key words meta data as a string
      * @throws ParseException 
      */
     private String getKeywordsAsString() throws ParseException {
@@ -498,7 +509,11 @@ public class PDF {
         document.getDocumentCatalog().setNames( names );
     }
     
-    
+    /**
+     * Loads content from attachment. This function is not used in the current implementation
+     * @param filePath
+     * @throws IOException 
+     */
     private void loadPDFAttachment(String filePath) throws IOException {
         PDDocumentNameDictionary namesDictionary = new PDDocumentNameDictionary(document.getDocumentCatalog());
         PDEmbeddedFilesNameTreeNode efTree = namesDictionary.getEmbeddedFiles();
@@ -521,7 +536,13 @@ public class PDF {
         }
     }
     
-    
+    /**
+     * Extracts multiple files from the PDF
+     * This function is not used in the current implementation
+     * @param names
+     * @param filePath
+     * @throws IOException 
+     */
     private static void extractFiles(Map<String,COSObjectable> names, String filePath) 
             throws IOException
     {
@@ -533,6 +554,15 @@ public class PDF {
         }
     }
 
+    /**
+     * Extracts a single file from the PDF
+     * This function is not used in the current implementation
+     * @param filePath
+     * @param filename
+     * @param embeddedFile
+     * @throws IOException
+     * @throws FileNotFoundException 
+     */
     private static void extractFile(String filePath, String filename, PDEmbeddedFile embeddedFile)
             throws IOException, FileNotFoundException
     {
@@ -544,6 +574,12 @@ public class PDF {
         }
     }
     
+    /**
+     * gets an embedded file object from the PDF
+     * This function is not used in the current implementation
+     * @param fileSpec
+     * @return 
+     */
     private static PDEmbeddedFile getEmbeddedFile(PDComplexFileSpecification fileSpec )
     {
         // search for the first available alternative of the embedded file
